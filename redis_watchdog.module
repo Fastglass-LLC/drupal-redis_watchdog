@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+function redis_watchdog_menu() {
+  $items = array();
+  $items['admin/reports/redislog'] = array(
+    'title' => 'Recent log messages',
+    'description' => 'View events that have recently been logged.',
+    'page callback' => 'redis_watchdog_overview',
+    'access arguments' => array('access site reports'),
+    'weight' => -1,
+    'file' => 'redis_watchdog.admin.inc',
+  );
+
+  $items['admin/reports/redislog/event/%'] = array(
+    'title' => 'Details',
+    'page callback' => 'redis_watchdog_event',
+    'page arguments' => array(4),
+    'access arguments' => array('access site reports'),
+    'file' => 'redis_watchdog.admin.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_watchdog().
+ */
+function redis_watchdog_watchdog(array $entry) {
+  $q = new Redislog();
+  $q->log($entry);
+}
+
+function _redis_watchdog_get_message_types() {
+  $log = new RedisLog();
+  return $log->getMessageTypes();
+}
+
+/**
+ * Implements hook_theme().
+ */
+function redis_watchdog_theme() {
+  return array(
+    'redis_watchdog_message' => array(
+      'variables' => array('event' => NULL, 'link' => FALSE),
+      'file' => 'redis_watchdog.admin.inc',
+    ),
+  );
+}

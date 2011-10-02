@@ -1,0 +1,7 @@
+name = "Redis Watchdog"
+description = Redis logging backend and user interface.
+package = Performance
+version = VERSION
+core = 7.x
+dependencies[] = redis
+files[] = RedisLog.php
