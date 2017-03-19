@@ -1,4 +1,10 @@
 <?php
+
+/**
+ * Class RedisLog
+ *
+ * Provide log functions to Drupal to replace DBlog.
+ */
 class RedisLog {
   protected $client;
   protected $key;
@@ -10,9 +16,6 @@ class RedisLog {
     $this->key = 'drupal:watchdog';
   }
 
-  /**
-   * Implements hook_watchdog().
-   */
   function log(array $log_entry) {
     // The user object may not exist in all conditions, so 0 is substituted if needed.
     $user_uid = isset($log_entry['user']->uid) ? $log_entry['user']->uid : 0;

@@ -188,6 +188,9 @@ function redis_watchdog_filters() {
  *   - event: An object with at least the message and variables properties.
  *   - link: (optional) Format message as link, event->wid is required.
  *
+ * @return array
+ *   Array of themeable items.
+ *
  * @ingroup themeable
  */
 function theme_redis_watchdog_message($variables) {
