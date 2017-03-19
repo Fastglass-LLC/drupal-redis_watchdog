@@ -56,18 +56,35 @@ class RedisLog {
     $logs = array();
     $types = array();
     $max_wid = $this->client->hGet($this->key, 'counter');
-    $keys = range($max_wid, $max_wid - $limit);
-    $res = $this->client->hmGet($this->key, $keys);
-    foreach ($res as $entry) {
-      $entry = unserialize($entry);
-      $logs[] = $entry;
-      if (!in_array($entry->type, $types)) {
-        $types[] = $entry->type;
+    if ($max_wid) {
+      if ($max_wid > $limit) {
+        $keys = range($max_wid, $max_wid - $limit);
       }
-    }
-    $this->types = $types;
+      else {
+        $keys = range($max_wid, 0);
+      }
 
-    $this->client->set($this->key . ':types', serialize($types));
+      $res = $this->client->hmGet($this->key, $keys);
+      foreach ($res as $entry) {
+        $entry = unserialize($entry);
+        $logs[] = $entry;
+        if (!in_array($entry->type, $types)) {
+          $types[] = $entry->type;
+        }
+      }
+      $this->types = $types;
+
+      $this->client->set($this->key . ':types', serialize($types));
+    }
     return $logs;
   }
+
+  public function clear() {
+    $this->client->multi();
+    $this->client->delete($this->key . ':types');
+    $this->client->delete($this->key);
+    $this->client->exec();
+  }
+
 }
+

@@ -156,16 +156,19 @@ function redis_watchdog_build_filter_query() {
 function redis_watchdog_filters() {
   $filters = array();
 
-  foreach (_redis_watchdog_get_message_types() as $type) {
-    $types[$type] = t($type);
-  }
+  $wd_types = _redis_watchdog_get_message_types();
+  if (!empty($wd_types)) {
+    foreach ($wd_types as $type) {
+      $types[$type] = t($type);
+    }
 
-  if (!empty($types)) {
-    $filters['type'] = array(
-      'title' => t('Type'),
-      'where' => "w.type = ?",
-      'options' => $types,
-    );
+    if (!empty($types)) {
+      $filters['type'] = array(
+        'title' => t('Type'),
+        'where' => "w.type = ?",
+        'options' => $types,
+      );
+    }
   }
 
   $filters['severity'] = array(
@@ -314,6 +317,9 @@ function redis_watchdog_clear_log_form($form) {
  */
 function redis_watchdog_clear_log_submit() {
   $_SESSION['redis_watchdog_overview_filter'] = array();
-  db_delete('watchdog')->execute();
+
+  $log = new RedisLog();
+  $log->clear();
+
   drupal_set_message(t('Database log cleared.'));
 }
