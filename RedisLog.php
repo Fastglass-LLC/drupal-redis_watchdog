@@ -8,7 +8,7 @@
 class RedisLog {
   protected $client;
   protected $key;
-  protected $types = array();
+  protected $types = [];
 
   public function __construct() {
     $this->client = Redis_Client::getClient();
@@ -20,7 +20,7 @@ class RedisLog {
     // The user object may not exist in all conditions, so 0 is substituted if needed.
     $user_uid = isset($log_entry['user']->uid) ? $log_entry['user']->uid : 0;
     $wid = $this->getId();
-    $message = array(
+    $message = [
       'wid' => $wid,
       'uid' => $user_uid,
       'type' => substr($log_entry['type'], 0, 64),
@@ -32,7 +32,7 @@ class RedisLog {
       'referer' => $log_entry['referer'],
       'hostname' => substr($log_entry['ip'], 0, 128),
       'timestamp' => $log_entry['timestamp'],
-    );
+    ];
     $message = (object) $message;
     $this->client->hSet($this->key, $wid, serialize($message));
   }
@@ -56,8 +56,8 @@ class RedisLog {
   }
 
   public function getMultiple($limit = 50, $sort_field = 'wid', $sort_direction = 'DESC') {
-    $logs = array();
-    $types = array();
+    $logs = [];
+    $types = [];
     $max_wid = $this->client->hGet($this->key, 'counter');
     if ($max_wid) {
       if ($max_wid > $limit) {

@@ -8,55 +8,60 @@
  */
 function redis_watchdog_overview() {
   $filter = redis_watchdog_build_filter_query();
-  $rows = array();
-  $classes = array(
-    WATCHDOG_DEBUG     => 'redis_watchdog-debug',
-    WATCHDOG_INFO      => 'redis_watchdog-info',
-    WATCHDOG_NOTICE    => 'redis_watchdog-notice',
-    WATCHDOG_WARNING   => 'redis_watchdog-warning',
-    WATCHDOG_ERROR     => 'redis_watchdog-error',
-    WATCHDOG_CRITICAL  => 'redis_watchdog-critical',
-    WATCHDOG_ALERT     => 'redis_watchdog-alert',
+  $rows = [];
+  $classes = [
+    WATCHDOG_DEBUG => 'redis_watchdog-debug',
+    WATCHDOG_INFO => 'redis_watchdog-info',
+    WATCHDOG_NOTICE => 'redis_watchdog-notice',
+    WATCHDOG_WARNING => 'redis_watchdog-warning',
+    WATCHDOG_ERROR => 'redis_watchdog-error',
+    WATCHDOG_CRITICAL => 'redis_watchdog-critical',
+    WATCHDOG_ALERT => 'redis_watchdog-alert',
     WATCHDOG_EMERGENCY => 'redis_watchdog-emerg',
-  );
+  ];
 
-  $header = array(
+  $header = [
     '', // Icon column.
-    array('data' => t('Type'), 'field' => 'w.type'),
-    array('data' => t('Date'), 'field' => 'w.wid', 'sort' => 'desc'), t('Message'),
-    array('data' => t('User'), 'field' => 'u.name'),
-    array('data' => t('Operations')),
-  );
+    ['data' => t('Type'), 'field' => 'w.type'],
+    ['data' => t('Date'), 'field' => 'w.wid', 'sort' => 'desc'],
+    t('Message'),
+    ['data' => t('User'), 'field' => 'u.name'],
+    ['data' => t('Operations')],
+  ];
 
   $log = new RedisLog();
   $result = $log->getMultiple(50, 'wid', 'DESC');
   foreach ($result as $log) {
-    $rows[] = array('data' =>
-      array(
-        // Cells
-        array('class' => 'icon'),
-        t($log->type),
-        format_date($log->timestamp, 'short'),
-        theme('redis_watchdog_message', array('event' => $log, 'link' => TRUE)),
-        theme('username', array('account' => $log)),
-        filter_xss($log->link),
-      ),
+    $rows[] = [
+      'data' =>
+        [
+          // Cells
+          ['class' => 'icon'],
+          t($log->type),
+          format_date($log->timestamp, 'short'),
+          theme('redis_watchdog_message', ['event' => $log, 'link' => TRUE]),
+          theme('username', ['account' => $log]),
+          filter_xss($log->link),
+        ],
       // Attributes for tr
-      'class' => array(drupal_html_class('dblog-' . $log->type), $classes[$log->severity]),
-    );
+      'class' => [
+        drupal_html_class('dblog-' . $log->type),
+        $classes[$log->severity],
+      ],
+    ];
   }
 
   $build['redis_watchdog_filter_form'] = drupal_get_form('redis_watchdog_filter_form');
   $build['redis_watchdog_clear_log_form'] = drupal_get_form('redis_watchdog_clear_log_form');
 
-  $build['redis_watchdog_table'] = array(
+  $build['redis_watchdog_table'] = [
     '#theme' => 'table',
     '#header' => $header,
     '#rows' => $rows,
-    '#attributes' => array('id' => 'admin-redis_watchdog'),
+    '#attributes' => ['id' => 'admin-redis_watchdog'],
     '#empty' => t('No log messages available.'),
-  );
-  $build['redis_watchdog_pager'] = array('#theme' => 'pager');
+  ];
+  $build['redis_watchdog_pager'] = ['#theme' => 'pager'];
 
   return $build;
 }
@@ -69,49 +74,49 @@ function redis_watchdog_event($id) {
   $log = new RedisLog();
   $result = $log->get($id);
   if ($log = $result) {
-    $rows = array(
-      array(
-        array('data' => t('Type'), 'header' => TRUE),
+    $rows = [
+      [
+        ['data' => t('Type'), 'header' => TRUE],
         t($log->type),
-      ),
-      array(
-        array('data' => t('Date'), 'header' => TRUE),
+      ],
+      [
+        ['data' => t('Date'), 'header' => TRUE],
         format_date($log->timestamp, 'long'),
-      ),
-      array(
-        array('data' => t('User'), 'header' => TRUE),
-        theme('username', array('account' => $log)),
-      ),
-      array(
-        array('data' => t('Location'), 'header' => TRUE),
+      ],
+      [
+        ['data' => t('User'), 'header' => TRUE],
+        theme('username', ['account' => $log]),
+      ],
+      [
+        ['data' => t('Location'), 'header' => TRUE],
         l($log->location, $log->location),
-      ),
-      array(
-        array('data' => t('Referrer'), 'header' => TRUE),
+      ],
+      [
+        ['data' => t('Referrer'), 'header' => TRUE],
         l($log->referer, $log->referer),
-      ),
-      array(
-        array('data' => t('Message'), 'header' => TRUE),
-        theme('redis_watchdog_message', array('event' => $log)),
-      ),
-      array(
-        array('data' => t('Severity'), 'header' => TRUE),
+      ],
+      [
+        ['data' => t('Message'), 'header' => TRUE],
+        theme('redis_watchdog_message', ['event' => $log]),
+      ],
+      [
+        ['data' => t('Severity'), 'header' => TRUE],
         $severity[$log->severity],
-      ),
-      array(
-        array('data' => t('Hostname'), 'header' => TRUE),
+      ],
+      [
+        ['data' => t('Hostname'), 'header' => TRUE],
         check_plain($log->hostname),
-      ),
-      array(
-        array('data' => t('Operations'), 'header' => TRUE),
+      ],
+      [
+        ['data' => t('Operations'), 'header' => TRUE],
         $log->link,
-      ),
-    );
-    $build['redis_watchdog_table'] = array(
+      ],
+    ];
+    $build['redis_watchdog_table'] = [
       '#theme' => 'table',
       '#rows' => $rows,
-      '#attributes' => array('class' => array('redis_watchdog-event')),
-    );
+      '#attributes' => ['class' => ['redis_watchdog-event']],
+    ];
     return $build;
   }
   else {
@@ -130,9 +135,9 @@ function redis_watchdog_build_filter_query() {
   $filters = redis_watchdog_filters();
 
   // Build query
-  $where = $args = array();
+  $where = $args = [];
   foreach ($_SESSION['redis_watchdog_overview_filter'] as $key => $filter) {
-    $filter_where = array();
+    $filter_where = [];
     foreach ($filter as $value) {
       $filter_where[] = $filters[$key]['where'];
       $args[] = $value;
@@ -143,10 +148,10 @@ function redis_watchdog_build_filter_query() {
   }
   $where = !empty($where) ? implode(' AND ', $where) : '';
 
-  return array(
+  return [
     'where' => $where,
     'args' => $args,
-  );
+  ];
 }
 
 
@@ -154,7 +159,7 @@ function redis_watchdog_build_filter_query() {
  * List redis_watchdog administration filters that can be applied.
  */
 function redis_watchdog_filters() {
-  $filters = array();
+  $filters = [];
 
   $wd_types = _redis_watchdog_get_message_types();
   if (!empty($wd_types)) {
@@ -163,19 +168,19 @@ function redis_watchdog_filters() {
     }
 
     if (!empty($types)) {
-      $filters['type'] = array(
+      $filters['type'] = [
         'title' => t('Type'),
         'where' => "w.type = ?",
         'options' => $types,
-      );
+      ];
     }
   }
 
-  $filters['severity'] = array(
+  $filters['severity'] = [
     'title' => t('Severity'),
     'where' => 'w.severity = ?',
     'options' => watchdog_severity_levels(),
-  );
+  ];
 
   return $filters;
 }
@@ -208,8 +213,8 @@ function theme_redis_watchdog_message($variables) {
     }
     if ($variables['link'] && isset($event->wid)) {
       // Truncate message to 56 chars.
-      $output = truncate_utf8(filter_xss($output, array()), 56, TRUE, TRUE);
-      $output = l($output, 'admin/reports/redislog/event/' . $event->wid, array('html' => TRUE));
+      $output = truncate_utf8(filter_xss($output, []), 56, TRUE, TRUE);
+      $output = l($output, 'admin/reports/redislog/event/' . $event->wid, ['html' => TRUE]);
     }
   }
   return $output;
@@ -225,38 +230,38 @@ function theme_redis_watchdog_message($variables) {
 function redis_watchdog_filter_form($form) {
   $filters = redis_watchdog_filters();
 
-  $form['filters'] = array(
+  $form['filters'] = [
     '#type' => 'fieldset',
     '#title' => t('Filter log messages'),
     '#collapsible' => TRUE,
     '#collapsed' => empty($_SESSION['redis_watchdog_overview_filter']),
-  );
+  ];
   foreach ($filters as $key => $filter) {
-    $form['filters']['status'][$key] = array(
+    $form['filters']['status'][$key] = [
       '#title' => $filter['title'],
       '#type' => 'select',
       '#multiple' => TRUE,
       '#size' => 8,
       '#options' => $filter['options'],
-    );
+    ];
     if (!empty($_SESSION['redis_watchdog_overview_filter'][$key])) {
       $form['filters']['status'][$key]['#default_value'] = $_SESSION['redis_watchdog_overview_filter'][$key];
     }
   }
 
-  $form['filters']['actions'] = array(
+  $form['filters']['actions'] = [
     '#type' => 'actions',
-    '#attributes' => array('class' => array('container-inline')),
-  );
-  $form['filters']['actions']['submit'] = array(
+    '#attributes' => ['class' => ['container-inline']],
+  ];
+  $form['filters']['actions']['submit'] = [
     '#type' => 'submit',
     '#value' => t('Filter'),
-  );
+  ];
   if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
-    $form['filters']['actions']['reset'] = array(
+    $form['filters']['actions']['reset'] = [
       '#type' => 'submit',
-      '#value' => t('Reset')
-    );
+      '#value' => t('Reset'),
+    ];
   }
 
   return $form;
@@ -286,7 +291,7 @@ function redis_watchdog_filter_form_submit($form, &$form_state) {
       }
       break;
     case t('Reset'):
-      $_SESSION['redis_watchdog_overview_filter'] = array();
+      $_SESSION['redis_watchdog_overview_filter'] = [];
       break;
   }
   return 'admin/reports/redis_watchdog';
@@ -299,18 +304,18 @@ function redis_watchdog_filter_form_submit($form, &$form_state) {
  * @see redis_watchdog_clear_log_submit()
  */
 function redis_watchdog_clear_log_form($form) {
-  $form['redis_watchdog_clear'] = array(
+  $form['redis_watchdog_clear'] = [
     '#type' => 'fieldset',
     '#title' => t('Clear log messages'),
     '#description' => t('This will permanently remove the log messages from the database.'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-  );
-  $form['redis_watchdog_clear']['clear'] = array(
+  ];
+  $form['redis_watchdog_clear']['clear'] = [
     '#type' => 'submit',
     '#value' => t('Clear log messages'),
-    '#submit' => array('redis_watchdog_clear_log_submit'),
-  );
+    '#submit' => ['redis_watchdog_clear_log_submit'],
+  ];
 
   return $form;
 }
@@ -319,7 +324,7 @@ function redis_watchdog_clear_log_form($form) {
  * Submit callback: clear database with log messages.
  */
 function redis_watchdog_clear_log_submit() {
-  $_SESSION['redis_watchdog_overview_filter'] = array();
+  $_SESSION['redis_watchdog_overview_filter'] = [];
 
   $log = new RedisLog();
   $log->clear();

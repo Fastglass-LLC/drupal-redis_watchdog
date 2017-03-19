@@ -4,23 +4,23 @@
  * Implements hook_menu().
  */
 function redis_watchdog_menu() {
-  $items = array();
-  $items['admin/reports/redislog'] = array(
+  $items = [];
+  $items['admin/reports/redislog'] = [
     'title' => 'Recent log messages',
     'description' => 'View events that have recently been logged.',
     'page callback' => 'redis_watchdog_overview',
-    'access arguments' => array('access site reports'),
+    'access arguments' => ['access site reports'],
     'weight' => -1,
     'file' => 'redis_watchdog.admin.inc',
-  );
+  ];
 
-  $items['admin/reports/redislog/event/%'] = array(
+  $items['admin/reports/redislog/event/%'] = [
     'title' => 'Details',
     'page callback' => 'redis_watchdog_event',
-    'page arguments' => array(4),
-    'access arguments' => array('access site reports'),
+    'page arguments' => [4],
+    'access arguments' => ['access site reports'],
     'file' => 'redis_watchdog.admin.inc',
-  );
+  ];
   return $items;
 }
 
@@ -41,10 +41,10 @@ function _redis_watchdog_get_message_types() {
  * Implements hook_theme().
  */
 function redis_watchdog_theme() {
-  return array(
-    'redis_watchdog_message' => array(
-      'variables' => array('event' => NULL, 'link' => FALSE),
+  return [
+    'redis_watchdog_message' => [
+      'variables' => ['event' => NULL, 'link' => FALSE],
       'file' => 'redis_watchdog.admin.inc',
-    ),
-  );
+    ],
+  ];
 }
