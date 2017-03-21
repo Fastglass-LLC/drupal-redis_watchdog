@@ -68,11 +68,28 @@ class RedisLog {
     return $this->types;
   }
 
-  private function get($wid) {
+  /**
+   * Retrieve a single log entry
+   *
+   * @param $wid
+   *  Log key ID number.
+   *
+   * @return bool|mixed
+   */
+  public function getSingle($wid) {
     $result = $this->client->hGet($this->key, $wid);
     return $result ? unserialize($result) : FALSE;
   }
 
+  /**
+   * Retrive multiple log entries.
+   *
+   * @param int $limit
+   * @param string $sort_field
+   * @param string $sort_direction
+   *
+   * @return array
+   */
   public function getMultiple($limit = 50, $sort_field = 'wid', $sort_direction = 'DESC') {
     $logs = [];
     $types = [];

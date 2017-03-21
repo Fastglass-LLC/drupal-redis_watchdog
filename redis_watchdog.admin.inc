@@ -72,7 +72,7 @@ function redis_watchdog_overview() {
 function redis_watchdog_event($id) {
   $severity = watchdog_severity_levels();
   $log = new RedisLog();
-  $result = $log->get($id);
+  $result = $log->getSingle($id);
   if ($log = $result) {
     $rows = [
       [
