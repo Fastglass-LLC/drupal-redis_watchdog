@@ -20,6 +20,8 @@ class RedisLog {
    * Create a log entry.
    *
    * @param array $log_entry
+   *
+   * @see https://github.com/phpredis/phpredis#hset
    */
   function log(array $log_entry) {
     // The user object may not exist in all conditions, so 0 is substituted if needed.
@@ -42,11 +44,22 @@ class RedisLog {
     $this->client->hSet($this->key, $wid, serialize($message));
   }
 
-
+  /**
+   * Returns the value of the counter and pushes it up by 1 when called.
+   *
+   * @return integer
+   *
+   * @see https://github.com/phpredis/phpredis#hincrby
+   */
   protected function getId() {
     return $this->client->hIncrBy($this->key . ':counter', 'counter', 1);
   }
 
+  /**
+   * Return the message types.
+   *
+   * @return array
+   */
   public function getMessageTypes() {
     if (empty($this->types)) {
       $types = $this->client->get($this->key . ':types');
@@ -55,7 +68,7 @@ class RedisLog {
     return $this->types;
   }
 
-  public function get($wid) {
+  private function get($wid) {
     $result = $this->client->hGet($this->key, $wid);
     return $result ? unserialize($result) : FALSE;
   }
