@@ -44,7 +44,7 @@ class RedisLog {
 
 
   protected function getId() {
-    return $this->client->hIncrBy($this->key, 'counter', 1);
+    return $this->client->hIncrBy($this->key . ':counter', 'counter', 1);
   }
 
   public function getMessageTypes() {
@@ -63,20 +63,20 @@ class RedisLog {
   public function getMultiple($limit = 50, $sort_field = 'wid', $sort_direction = 'DESC') {
     $logs = [];
     $types = [];
-    $max_wid = $this->client->hGet($this->key, 'counter');
+    $max_wid = $this->client->hGet($this->key . ':counter', 'counter');
     if ($max_wid) {
       if ($max_wid > $limit) {
         $keys = range($max_wid, $max_wid - $limit);
       }
       else {
-        $keys = range($max_wid, 0);
+        $keys = range($max_wid, 1);
       }
 
       $res = $this->client->hmGet($this->key, $keys);
       foreach ($res as $entry) {
         $entry = unserialize($entry);
         $logs[] = $entry;
-        if (!in_array($entry->type, $types) && !empty($entry->type)) {
+        if (!in_array($entry->type, $types)) {
           $types[] = $entry->type;
         }
       }
@@ -87,9 +87,13 @@ class RedisLog {
     return $logs;
   }
 
+  /**
+   * Clear all information from logs.
+   */
   public function clear() {
     $this->client->multi();
     $this->client->delete($this->key . ':types');
+    $this->client->delete($this->key . ':counter');
     $this->client->delete($this->key);
     $this->client->exec();
   }
