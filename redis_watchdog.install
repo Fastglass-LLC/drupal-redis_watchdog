@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ *
+ * Drupal module install file.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+
+function redis_watchdog_uninstall(){
+  variable_del('redis_watchdogprefix');
+}
