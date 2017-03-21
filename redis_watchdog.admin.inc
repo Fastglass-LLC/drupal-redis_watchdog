@@ -331,3 +331,4 @@ function redis_watchdog_clear_log_submit() {
 
   drupal_set_message(t('Database log cleared.'));
 }
+
