@@ -16,6 +16,11 @@ class RedisLog {
     $this->key = 'drupal:watchdog';
   }
 
+  /**
+   * Create a log entry.
+   *
+   * @param array $log_entry
+   */
   function log(array $log_entry) {
     // The user object may not exist in all conditions, so 0 is substituted if needed.
     $user_uid = isset($log_entry['user']->uid) ? $log_entry['user']->uid : 0;
@@ -71,7 +76,7 @@ class RedisLog {
       foreach ($res as $entry) {
         $entry = unserialize($entry);
         $logs[] = $entry;
-        if (!in_array($entry->type, $types)) {
+        if (!in_array($entry->type, $types) && !empty($entry->type)) {
           $types[] = $entry->type;
         }
       }
