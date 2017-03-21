@@ -28,7 +28,8 @@ function redis_watchdog_menu() {
  * Implements hook_watchdog().
  */
 function redis_watchdog_watchdog(array $entry) {
-  $q = new Redislog();
+  $prefix = variable_get('redis_watchdogprefix', '');
+  $q = new Redislog($prefix);
   $q->log($entry);
 }
 
@@ -66,7 +67,7 @@ function redis_watchdog_form_redis_settings_form_alter(&$form, &$form_state) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   ];
-  $form['watchdog']['watchdogprefix'] = [
+  $form['watchdog']['redis_watchdogprefix'] = [
     '#type' => 'textfield',
     '#title' => t('Key prefix'),
     '#description' => t('You may specify a prefix if you are using a single Redis server for multiple sites. This will add a prefix to the beginning of the keys.'),
