@@ -28,8 +28,8 @@ function redis_watchdog_overview() {
     ['data' => t('User'), 'field' => 'u.name'],
     ['data' => t('Operations')],
   ];
-
-  $log = new RedisLog();
+  $prefix = variable_get('redis_watchdogprefix', '');
+  $log = new RedisLog($prefix);
   $result = $log->getMultiple(50, 'wid', 'DESC');
   foreach ($result as $log) {
     $rows[] = [
@@ -71,7 +71,8 @@ function redis_watchdog_overview() {
  */
 function redis_watchdog_event($id) {
   $severity = watchdog_severity_levels();
-  $log = new RedisLog();
+  $prefix = variable_get('redis_watchdogprefix', '');
+  $log = new RedisLog($prefix);
   $result = $log->getSingle($id);
   if ($log = $result) {
     $rows = [
@@ -325,8 +326,8 @@ function redis_watchdog_clear_log_form($form) {
  */
 function redis_watchdog_clear_log_submit() {
   $_SESSION['redis_watchdog_overview_filter'] = [];
-
-  $log = new RedisLog();
+  $prefix = variable_get('redis_watchdogprefix', '');
+  $log = new RedisLog($prefix);
   $log->clear();
 
   drupal_set_message(t('Database log cleared.'));

@@ -76,3 +76,7 @@ function redis_watchdog_form_redis_settings_form_alter(&$form, &$form_state) {
     '#default_value' => variable_get('redis_watchdogprefix', ''),
   ];
 }
+
+/**
+ * @todo Create a helper function to return RedisLog client.
+ */

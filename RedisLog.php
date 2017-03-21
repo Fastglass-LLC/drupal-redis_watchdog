@@ -13,7 +13,13 @@ class RedisLog {
   public function __construct($prefix = '') {
     $this->client = Redis_Client::getClient();
     // TODO: Need to support a site prefix here.
-    $this->key = 'drupal:watchdog';
+    if (!empty($prefix)){
+      $this->key = 'drupal:watchdog:' . $prefix;
+    }
+    else {
+      $this->key = 'drupal:watchdog';
+    }
+
   }
 
   /**
