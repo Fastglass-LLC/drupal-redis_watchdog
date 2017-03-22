@@ -19,3 +19,8 @@ Installation
 ------------------------------------
 Place the module in your Drupal website and enable the module. The reports will
 be available at admin/reports/redislog in your site.
+
+Uninstallation
+------------------------------------
+Uninstalling this module will remove data for the function of the module but your
+data in Redis will remain.

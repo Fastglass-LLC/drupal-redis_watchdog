@@ -51,9 +51,12 @@ function redis_watchdog_overview() {
     ];
   }
 
+  // Filter form.
   $build['redis_watchdog_filter_form'] = drupal_get_form('redis_watchdog_filter_form');
+  // Clear log form.
   $build['redis_watchdog_clear_log_form'] = drupal_get_form('redis_watchdog_clear_log_form');
 
+  // Table of log items.
   $build['redis_watchdog_table'] = [
     '#theme' => 'table',
     '#header' => $header,
