@@ -282,6 +282,8 @@ function redis_watchdog_filter_form_validate($form, &$form_state) {
 
 /**
  * Process result from redis_watchdog administration filter form.
+ *
+ * @todo form filter not working.
  */
 function redis_watchdog_filter_form_submit($form, &$form_state) {
   $op = $form_state['values']['op'];
