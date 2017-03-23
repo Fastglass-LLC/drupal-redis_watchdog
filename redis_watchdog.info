@@ -4,5 +4,5 @@ package = Performance
 version = VERSION
 core = 7.x
 dependencies[] = redis
-files[] = RedisLog.php
+files[] = src/RedisLog.php
 php = 5.5
