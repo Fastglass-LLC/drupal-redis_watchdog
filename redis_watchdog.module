@@ -28,8 +28,7 @@ function redis_watchdog_menu() {
  * Implements hook_watchdog().
  */
 function redis_watchdog_watchdog(array $entry) {
-  $prefix = variable_get('redis_watchdogprefix', '');
-  $q = new Redislog($prefix);
+  $q = redis_watchdog_client();
   $q->log($entry);
 }
 
@@ -39,7 +38,7 @@ function redis_watchdog_watchdog(array $entry) {
  * @return array|mixed
  */
 function _redis_watchdog_get_message_types() {
-  $log = new RedisLog();
+  $log = redis_watchdog_client();
   return $log->getMessageTypes();
 }
 
@@ -78,5 +77,13 @@ function redis_watchdog_form_redis_settings_form_alter(&$form, &$form_state) {
 }
 
 /**
- * @todo Create a helper function to return RedisLog client.
+ * Return the Redis client for log activity.
+ *
+ * @return object
  */
+
+function redis_watchdog_client() {
+  $prefix = variable_get('redis_watchdogprefix', '');
+  $client = new Redislog($prefix);
+  return $client;
+}
