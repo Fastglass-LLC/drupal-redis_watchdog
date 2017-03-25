@@ -28,8 +28,7 @@ function redis_watchdog_overview() {
     ['data' => t('User'), 'field' => 'u.name'],
     ['data' => t('Operations')],
   ];
-  $prefix = variable_get('redis_watchdogprefix', '');
-  $log = new RedisLog($prefix);
+  $log = redis_watchdog_client();
   $result = $log->getMultiple(50, 'wid', 'DESC');
   foreach ($result as $log) {
     $rows[] = [
@@ -74,8 +73,7 @@ function redis_watchdog_overview() {
  */
 function redis_watchdog_event($id) {
   $severity = watchdog_severity_levels();
-  $prefix = variable_get('redis_watchdogprefix', '');
-  $log = new RedisLog($prefix);
+  $log = redis_watchdog_client();
   $result = $log->getSingle($id);
   if ($log = $result) {
     $rows = [
@@ -276,7 +274,7 @@ function redis_watchdog_filter_form($form) {
  */
 function redis_watchdog_filter_form_validate($form, &$form_state) {
   if ($form_state['values']['op'] == t('Filter') && empty($form_state['values']['type']) && empty($form_state['values']['severity'])) {
-    form_set_error('type', t('You must select something to filter by.'));
+    form_set_error('type', t('To filter, you must make a selection.'));
   }
 }
 
