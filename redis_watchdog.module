@@ -103,6 +103,7 @@ function redis_watchdog_form_redis_settings_form_alter(&$form, &$form_state) {
 function redis_watchdog_client() {
   $prefix = variable_get('redis_watchdogprefix', '');
   $limit = variable_get('redis_watchdogrecentlimit', 200);
-  $client = new Redislog($prefix, $limit);
+  $archive = variable_get('redis_watchdogarchivelimit', 5000);
+  $client = new Redislog($prefix, $limit, $archive);
   return $client;
 }
