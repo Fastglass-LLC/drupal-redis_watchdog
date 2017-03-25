@@ -6,7 +6,7 @@
 function redis_watchdog_menu() {
   $items = [];
   $items['admin/reports/redislog'] = [
-    'title' => 'Recent log messages',
+    'title' => 'Recent Redis Log Messages',
     'description' => 'View events that have recently been logged.',
     'page callback' => 'redis_watchdog_overview',
     'access arguments' => ['access site reports'],
