@@ -74,6 +74,24 @@ function redis_watchdog_form_redis_settings_form_alter(&$form, &$form_state) {
     '#collapsed' => TRUE,
     '#default_value' => variable_get('redis_watchdogprefix', ''),
   ];
+  $form['watchdog']['redis_watchdogrecentlimit'] = [
+    '#type' => 'textfield',
+    '#size' => 10,
+    '#title' => t('Recent log limit'),
+    '#description' => t('This is a limit on the display of recent logs in the default log view. This can be any number, but the larger the number the larger the dataset that is pulled into the default log page.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#default_value' => variable_get('redis_watchdogrecentlimit', 200),
+  ];
+  $form['watchdog']['redis_watchdogarchivelimit'] = [
+    '#type' => 'textfield',
+    '#size' => 10,
+    '#title' => t('Archive log limit'),
+    '#description' => t('This is the limit on the amount of logs that will be saved for any log type.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#default_value' => variable_get('redis_watchdogarchivelimit', 5000),
+  ];
 }
 
 /**
@@ -84,6 +102,7 @@ function redis_watchdog_form_redis_settings_form_alter(&$form, &$form_state) {
 
 function redis_watchdog_client() {
   $prefix = variable_get('redis_watchdogprefix', '');
-  $client = new Redislog($prefix);
+  $limit = variable_get('redis_watchdogrecentlimit', 200);
+  $client = new Redislog($prefix, $limit);
   return $client;
 }
