@@ -13,7 +13,7 @@ class RedisLog {
   public function __construct($prefix = '') {
     $this->client = Redis_Client::getClient();
     // TODO: Need to support a site prefix here.
-    if (!empty($prefix)){
+    if (!empty($prefix)) {
       $this->key = 'drupal:watchdog:' . $prefix . ':';
     }
     else {
@@ -25,8 +25,8 @@ class RedisLog {
   /**
    * Create a log entry.
    *
-   * @todo To create sortable data, the types need to be processed in this function
-   * to save the type in the log creation process.
+   * @todo To create sortable data, the types need to be processed in this
+   *   function to save the type in the log creation process.
    *
    * @param array $log_entry
    *
@@ -49,10 +49,12 @@ class RedisLog {
       'hostname' => substr($log_entry['ip'], 0, 128),
       'timestamp' => $log_entry['timestamp'],
     ];
-
-    // Store types in a separate hash table to build the filters menu.
-    $this->client->hSetNx($this->key . ':type', $message['type'], TRUE);
-
+    // Record the type only if it doesn't already exist in the hash.
+    if (!$this->client->hExists($this->key . ':type', $message['type'])) {
+      // Store types in a separate hash table to build the filters menu.
+      $tid = $this->getTypeIDCounter();
+      $this->client->hSet($this->key . ':type', $message['type'], $tid);
+    }
     $message = (object) $message;
     $this->client->hSet($this->key, $wid, serialize($message));
   }
@@ -62,7 +64,7 @@ class RedisLog {
    *
    * @return integer
    *
-   * @see https://github.com/phpredis/phpredis#hincrby
+   * @see https://github.com/phpredis/phpredis#hget
    */
   protected function getLogCounter() {
 
@@ -77,7 +79,7 @@ class RedisLog {
    * @see https://github.com/phpredis/phpredis#hincrby
    */
   protected function getPushLogCounter() {
-    return $this->client->hIncrBy($this->key . ':counters' , 'logs', 1);
+    return $this->client->hIncrBy($this->key . ':counters', 'logs', 1);
   }
 
   /**
@@ -85,7 +87,7 @@ class RedisLog {
    *
    * @return integer
    *
-   * @see https://github.com/phpredis/phpredis#hincrby
+   * @see https://github.com/phpredis/phpredis#hget
    */
   protected function getTypeCounter() {
     return $this->client->hGet($this->key . ':counters', 'types');
@@ -100,6 +102,17 @@ class RedisLog {
    */
   protected function getPushTypeCounter() {
     return $this->client->hIncrBy($this->key . ':counters', 'types', 1);
+  }
+
+  /**
+   * Returns a value to use for the type ID number.
+   *
+   * @return integer
+   *
+   * @see https://github.com/phpredis/phpredis#hincrby
+   */
+  protected function getTypeIDCounter() {
+    return $this->client->hIncrBy($this->key . ':counters', 'typeid', 1);
   }
 
   /**
