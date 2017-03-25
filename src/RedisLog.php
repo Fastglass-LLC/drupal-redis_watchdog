@@ -9,8 +9,9 @@ class RedisLog {
   protected $client;
   protected $key;
   protected $types = [];
+  protected $recent;
 
-  public function __construct($prefix = '') {
+  public function __construct($prefix = '', $recentlength = 100) {
     $this->client = Redis_Client::getClient();
     // TODO: Need to support a site prefix here.
     if (!empty($prefix)) {
@@ -19,7 +20,7 @@ class RedisLog {
     else {
       $this->key = 'drupal:watchdog';
     }
-
+    $this->recent = $recentlength;
   }
 
   /**
@@ -56,6 +57,10 @@ class RedisLog {
       $this->client->hSet($this->key . ':type', $message['type'], $tid);
     }
     $message = (object) $message;
+    // Push the log into the recent message list.
+    $this->client->rPush($this->key . ':recentlogs', serialize($message));
+    // Trim the recent message list to a set amount.
+    lTrim($this->key . ':recentlogs', $this->recent);
     $this->client->hSet($this->key, $wid, serialize($message));
   }
 
@@ -181,6 +186,7 @@ class RedisLog {
     $this->client->multi();
     $this->client->delete($this->key . ':type');
     $this->client->delete($this->key . ':counters');
+    $this->client->delete($this->key . ':recentlogs');
     $this->client->delete($this->key);
     $this->client->exec();
   }
