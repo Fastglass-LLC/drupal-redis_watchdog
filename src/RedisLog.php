@@ -14,7 +14,7 @@ class RedisLog {
     $this->client = Redis_Client::getClient();
     // TODO: Need to support a site prefix here.
     if (!empty($prefix)){
-      $this->key = 'drupal:watchdog:' . $prefix;
+      $this->key = 'drupal:watchdog:' . $prefix . ':';
     }
     else {
       $this->key = 'drupal:watchdog';
@@ -35,7 +35,7 @@ class RedisLog {
   function log(array $log_entry) {
     // The user object may not exist in all conditions, so 0 is substituted if needed.
     $user_uid = isset($log_entry['user']->uid) ? $log_entry['user']->uid : 0;
-    $wid = $this->getId();
+    $wid = $this->getPushLogCounter();
     $message = [
       'wid' => $wid,
       'uid' => $user_uid,
@@ -58,31 +58,48 @@ class RedisLog {
   }
 
   /**
-   * Returns the value of the counter and pushes it up by 1 when called.
-   *
-   * @todo refoctor to hash table.
+   * Returns the value of the counter.
    *
    * @return integer
    *
    * @see https://github.com/phpredis/phpredis#hincrby
    */
-  protected function getId() {
-    $key = !empty($prefix) ? $prefix . 'rediswatchdogcounter' : 'rediswatchdogcounter';
-    return $this->client->incr($key);
+  protected function getLogCounter() {
+
+    return $this->client->hGet($this->key . ':counters', 'logs');
+  }
+
+  /**
+   * Returns the value of the counter and pushes it up by 1 when called.
+   *
+   * @return integer
+   *
+   * @see https://github.com/phpredis/phpredis#hincrby
+   */
+  protected function getPushLogCounter() {
+    return $this->client->hIncrBy($this->key . ':counters' , 'logs', 1);
   }
 
   /**
    * Returns the value of the type counter and pushes it up by 1 when called.
-   *
-   * @todo refoctor to hash table.
    *
    * @return integer
    *
    * @see https://github.com/phpredis/phpredis#hincrby
    */
   protected function getTypeCounter() {
-    $key = !empty($prefix) ? $prefix . 'rediswatchdogtypecounter' : 'rediswatchdogtypecounter';
-    return $this->client->incr($key);
+    return $this->client->hGet($this->key . ':counters', 'types');
+  }
+
+  /**
+   * Returns the value of the type counter and pushes it up by 1 when called.
+   *
+   * @return integer
+   *
+   * @see https://github.com/phpredis/phpredis#hincrby
+   */
+  protected function getPushTypeCounter() {
+    return $this->client->hIncrBy($this->key . ':counters', 'types', 1);
   }
 
   /**
@@ -92,8 +109,6 @@ class RedisLog {
    */
   public function getMessageTypes() {
     if (empty($this->types)) {
-      //$types = $this->client->get($this->key . ':types');
-      //$this->types = unserialize($types);
       $this->types = array_keys($this->client->hGetAll($this->key . ':type'));
     }
     return $this->types;
@@ -124,8 +139,7 @@ class RedisLog {
   public function getMultiple($limit = 50, $sort_field = 'wid', $sort_direction = 'DESC') {
     $logs = [];
     $types = [];
-    $key = !empty($prefix) ? $prefix . 'rediswatchdogcounter' : 'rediswatchdogcounter';
-    $max_wid = $this->client->get($key);
+    $max_wid = $this->getLogCounter();
     if ($max_wid) {
       if ($max_wid > $limit) {
         $keys = range($max_wid, $max_wid - $limit);
@@ -151,12 +165,10 @@ class RedisLog {
    * Clear all information from logs.
    */
   public function clear() {
-    $prefix = variable_get('redis_watchdogprefix', '');
-    $key = !empty($prefix) ? $prefix . $this->key : $this->key;
     $this->client->multi();
-    $this->client->delete($key . ':type');
-    $this->client->delete($key);
-    $this->client->delete($prefix . 'rediswatchdogcounter');
+    $this->client->delete($this->key . ':type');
+    $this->client->delete($this->key . ':counters');
+    $this->client->delete($this->key);
     $this->client->exec();
   }
 
