@@ -74,8 +74,9 @@ class RedisLog {
    */
   public function getMessageTypes() {
     if (empty($this->types)) {
-      $types = $this->client->get($this->key . ':types');
-      $this->types = unserialize($types);
+      //$types = $this->client->get($this->key . ':types');
+      //$this->types = unserialize($types);
+      $this->types = array_keys($this->client->hGetAll($this->key . ':type'));
     }
     return $this->types;
   }
@@ -124,8 +125,6 @@ class RedisLog {
         }
       }
       $this->types = $types;
-
-      $this->client->set($this->key . ':types', serialize($types));
     }
     return $logs;
   }
@@ -137,7 +136,6 @@ class RedisLog {
     $prefix = variable_get('redis_watchdogprefix', '');
     $key = !empty($prefix) ? $prefix . $this->key : $this->key;
     $this->client->multi();
-    $this->client->delete($key . ':types');
     $this->client->delete($key . ':type');
     $this->client->delete($key);
     $this->client->delete($prefix . 'rediswatchdogcounter');
