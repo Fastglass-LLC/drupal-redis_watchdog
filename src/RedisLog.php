@@ -63,7 +63,6 @@ class RedisLog {
    * @see https://github.com/phpredis/phpredis#hincrby
    */
   protected function getId() {
-    $this->client->hIncrBy($this->key . ':counter', 'counter', 1);
     return $this->client->incr('rediswatchdogcounter');
   }
 
@@ -105,7 +104,7 @@ class RedisLog {
   public function getMultiple($limit = 50, $sort_field = 'wid', $sort_direction = 'DESC') {
     $logs = [];
     $types = [];
-    $max_wid = $this->client->hGet($this->key . ':counter', 'counter');
+    $max_wid = $this->client->get('rediswatchdogcounter');
     if ($max_wid) {
       if ($max_wid > $limit) {
         $keys = range($max_wid, $max_wid - $limit);
@@ -137,7 +136,7 @@ class RedisLog {
     $key = !empty($prefix) ? $prefix . $this->key : $this->key;
     $this->client->multi();
     $this->client->delete($key . ':types');
-    $this->client->delete($key . ':counter');
+    $this->client->delete($key . ':type');
     $this->client->delete($key);
     $this->client->delete('rediswatchdogcounter');
     $this->client->exec();
