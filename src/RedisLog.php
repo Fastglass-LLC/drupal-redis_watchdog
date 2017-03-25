@@ -25,6 +25,9 @@ class RedisLog {
   /**
    * Create a log entry.
    *
+   * @todo To create sortable data, the types need to be processed in this function
+   * to save the type in the log creation process.
+   *
    * @param array $log_entry
    *
    * @see https://github.com/phpredis/phpredis#hset
@@ -46,6 +49,8 @@ class RedisLog {
       'hostname' => substr($log_entry['ip'], 0, 128),
       'timestamp' => $log_entry['timestamp'],
     ];
+
+    $this->client->hSetNx($this->key . ':type', $message['type'], TRUE);
     $message = (object) $message;
     $this->client->hSet($this->key, $wid, serialize($message));
   }
@@ -58,7 +63,8 @@ class RedisLog {
    * @see https://github.com/phpredis/phpredis#hincrby
    */
   protected function getId() {
-    return $this->client->hIncrBy($this->key . ':counter', 'counter', 1);
+    $this->client->hIncrBy($this->key . ':counter', 'counter', 1);
+    return $this->client->incr('rediswatchdogcounter');
   }
 
   /**
@@ -127,10 +133,13 @@ class RedisLog {
    * Clear all information from logs.
    */
   public function clear() {
+    $prefix = variable_get('redis_watchdogprefix', '');
+    $key = !empty($prefix) ? $prefix . $this->key : $this->key;
     $this->client->multi();
-    $this->client->delete($this->key . ':types');
-    $this->client->delete($this->key . ':counter');
-    $this->client->delete($this->key);
+    $this->client->delete($key . ':types');
+    $this->client->delete($key . ':counter');
+    $this->client->delete($key);
+    $this->client->delete('rediswatchdogcounter');
     $this->client->exec();
   }
 
