@@ -180,6 +180,21 @@ class RedisLog {
   }
 
   /**
+   * Retrieve recent log entries from linked list.
+   *
+   * @return array
+   */
+  public function getRecentLogs() {
+    $logs = [];
+    $res = $this->client->lRange($this->key . ':recentlogs', 0, -1);
+    foreach ($res as $entry) {
+      $entry = unserialize($entry);
+      $logs[] = $entry;
+    }
+    return $logs;
+  }
+
+  /**
    * Clear all information from logs.
    */
   public function clear() {

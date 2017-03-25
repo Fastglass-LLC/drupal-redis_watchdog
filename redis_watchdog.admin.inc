@@ -29,7 +29,7 @@ function redis_watchdog_overview() {
     ['data' => t('Operations')],
   ];
   $log = redis_watchdog_client();
-  $result = $log->getMultiple(50, 'wid', 'DESC');
+  $result = $log->getRecentLogs();
   foreach ($result as $log) {
     $rows[] = [
       'data' =>
