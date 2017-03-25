@@ -50,7 +50,9 @@ class RedisLog {
       'timestamp' => $log_entry['timestamp'],
     ];
 
+    // Store types in a separate hash table to build the filters menu.
     $this->client->hSetNx($this->key . ':type', $message['type'], TRUE);
+
     $message = (object) $message;
     $this->client->hSet($this->key, $wid, serialize($message));
   }
@@ -58,12 +60,28 @@ class RedisLog {
   /**
    * Returns the value of the counter and pushes it up by 1 when called.
    *
+   * @todo refoctor to hash table.
+   *
    * @return integer
    *
    * @see https://github.com/phpredis/phpredis#hincrby
    */
   protected function getId() {
     $key = !empty($prefix) ? $prefix . 'rediswatchdogcounter' : 'rediswatchdogcounter';
+    return $this->client->incr($key);
+  }
+
+  /**
+   * Returns the value of the type counter and pushes it up by 1 when called.
+   *
+   * @todo refoctor to hash table.
+   *
+   * @return integer
+   *
+   * @see https://github.com/phpredis/phpredis#hincrby
+   */
+  protected function getTypeCounter() {
+    $key = !empty($prefix) ? $prefix . 'rediswatchdogtypecounter' : 'rediswatchdogtypecounter';
     return $this->client->incr($key);
   }
 
