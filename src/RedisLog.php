@@ -10,8 +10,9 @@ class RedisLog {
   protected $key;
   protected $types = [];
   protected $recent;
+  protected $archivelimit;
 
-  public function __construct($prefix = '', $recentlength = 100) {
+  public function __construct($prefix = '', $recentlength = 100, $archivelimit = 5000) {
     $this->client = Redis_Client::getClient();
     // TODO: Need to support a site prefix here.
     if (!empty($prefix)) {
@@ -21,6 +22,7 @@ class RedisLog {
       $this->key = 'drupal:watchdog';
     }
     $this->recent = $recentlength;
+    $this->archivelimit = $archivelimit;
   }
 
   /**
@@ -56,11 +58,22 @@ class RedisLog {
       $tid = $this->getTypeIDCounter();
       $this->client->hSet($this->key . ':type', $message['type'], $tid);
     }
+    else {
+      // Find the type ID already assigned.
+      $tid = $this->client->hGet($this->key . ':type', $message['type']);
+    }
     $message = (object) $message;
+
     // Push the log into the recent message list.
     $this->client->rPush($this->key . ':recentlogs', serialize($message));
     // Trim the recent message list to a set amount.
     lTrim($this->key . ':recentlogs', $this->recent);
+
+    // Push the log into the type message list.
+    $this->client->rPush($this->key . ':logs:' . $tid, serialize($message));
+    // Trim the list for the type messages according to the archive limit.
+    lTrim($this->key . ':logs:' . $tid, $this->archivelimit);
+
     $this->client->hSet($this->key, $wid, serialize($message));
   }
 
