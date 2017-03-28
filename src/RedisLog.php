@@ -52,6 +52,7 @@ class RedisLog {
       'hostname' => substr($log_entry['ip'], 0, 128),
       'timestamp' => $log_entry['timestamp'],
     ];
+
     // Record the type only if it doesn't already exist in the hash.
     if (!$this->client->hExists($this->key . ':type', $message['type'])) {
       // Store types in a separate hash table to build the filters menu.
@@ -162,12 +163,10 @@ class RedisLog {
    * Retrive multiple log entries.
    *
    * @param int $limit
-   * @param string $sort_field
-   * @param string $sort_direction
    *
    * @return array
    */
-  public function getMultiple($limit = 50, $sort_field = 'wid', $sort_direction = 'DESC') {
+  public function getMultiple($limit = 50) {
     $logs = [];
     $types = [];
     $max_wid = $this->getLogCounter();
@@ -180,6 +179,32 @@ class RedisLog {
       }
 
       $res = $this->client->hmGet($this->key, $keys);
+      foreach ($res as $entry) {
+        $entry = unserialize($entry);
+        $logs[] = $entry;
+        if (!in_array($entry->type, $types)) {
+          $types[] = $entry->type;
+        }
+      }
+      $this->types = $types;
+    }
+    return $logs;
+  }
+
+  /**
+   * Return multiple log entries for a specific log type.
+   *
+   * @param int $limit
+   * @param null $tid
+   *
+   * @return array
+   */
+  public function getMultipleByType($limit = 50, $tid = NULL) {
+    $logs = [];
+    $types = [];
+    if ($tid) {
+      // @todo provide a range control.
+      $res = $this->client->lRange($this->key . ':logs:' . $tid, 0, -1);
       foreach ($res as $entry) {
         $entry = unserialize($entry);
         $logs[] = $entry;
