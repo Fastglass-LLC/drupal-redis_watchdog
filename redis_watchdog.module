@@ -21,6 +21,12 @@ function redis_watchdog_menu() {
     'access arguments' => ['access site reports'],
     'file' => 'redis_watchdog.admin.inc',
   ];
+  $items['admin/reports/redislog/type/%/%'] = [
+    'title' => 'Log Type Report',
+    'page callback' => 'redis_watchdog_type',
+    'access arguments' => ['access site reports'],
+    'file' => 'redis_watchdog.admin.inc',
+  ];
   return $items;
 }
 
