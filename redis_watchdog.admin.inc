@@ -172,24 +172,21 @@ function redis_watchdog_filter_form($form) {
   // Message types.
   $wd_types = _redis_watchdog_get_message_types();
 
+  // Build a selection list of log types.
   $form['filters'] = [
     '#type' => 'fieldset',
-    '#title' => t('Filter log messages'),
+    '#title' => t('Filter log messages by type'),
     '#collapsible' => TRUE,
     '#collapsed' => empty($_SESSION['redis_watchdog_overview_filter']),
   ];
-  foreach ($filters as $key => $filter) {
-    $form['filters']['status'][$key] = [
-      '#title' => $filter['title'],
-      '#type' => 'select',
-      '#multiple' => TRUE,
-      '#size' => 8,
-      '#options' => $filter['options'],
-    ];
-    if (!empty($_SESSION['redis_watchdog_overview_filter'][$key])) {
-      $form['filters']['status'][$key]['#default_value'] = $_SESSION['redis_watchdog_overview_filter'][$key];
-    }
-  }
+
+  $form['filters']['type'] = [
+    '#title' => t('Available types'),
+    '#type' => 'select',
+    '#multiple' => TRUE,
+    '#size' => 8,
+    '#options' => $wd_types,
+  ];
 
   $form['filters']['actions'] = [
     '#type' => 'actions',
