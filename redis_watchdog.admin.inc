@@ -7,7 +7,6 @@
  * the message details page.
  */
 function redis_watchdog_overview() {
-  $filter = redis_watchdog_build_filter_query();
   $rows = [];
   $classes = [
     WATCHDOG_DEBUG => 'redis_watchdog-debug',
@@ -50,7 +49,7 @@ function redis_watchdog_overview() {
     ];
   }
 
-  // Filter form.
+  // Log type selector menu.
   $build['redis_watchdog_filter_form'] = drupal_get_form('redis_watchdog_filter_form');
   // Clear log form.
   $build['redis_watchdog_clear_log_form'] = drupal_get_form('redis_watchdog_clear_log_form');
@@ -127,67 +126,6 @@ function redis_watchdog_event($id) {
 }
 
 /**
- * Build query for redis_watchdog administration filters based on session.
- */
-function redis_watchdog_build_filter_query() {
-  if (empty($_SESSION['redis_watchdog_overview_filter'])) {
-    return;
-  }
-
-  $filters = redis_watchdog_filters();
-
-  // Build query
-  $where = $args = [];
-  foreach ($_SESSION['redis_watchdog_overview_filter'] as $key => $filter) {
-    $filter_where = [];
-    foreach ($filter as $value) {
-      $filter_where[] = $filters[$key]['where'];
-      $args[] = $value;
-    }
-    if (!empty($filter_where)) {
-      $where[] = '(' . implode(' OR ', $filter_where) . ')';
-    }
-  }
-  $where = !empty($where) ? implode(' AND ', $where) : '';
-
-  return [
-    'where' => $where,
-    'args' => $args,
-  ];
-}
-
-
-/**
- * List redis_watchdog administration filters that can be applied.
- */
-function redis_watchdog_filters() {
-  $filters = [];
-
-  $wd_types = _redis_watchdog_get_message_types();
-  if (!empty($wd_types)) {
-    foreach ($wd_types as $type) {
-      $types[$type] = t($type);
-    }
-
-    if (!empty($types)) {
-      $filters['type'] = [
-        'title' => t('Type'),
-        'where' => "w.type = ?",
-        'options' => $types,
-      ];
-    }
-  }
-
-  $filters['severity'] = [
-    'title' => t('Severity'),
-    'where' => 'w.severity = ?',
-    'options' => watchdog_severity_levels(),
-  ];
-
-  return $filters;
-}
-
-/**
  * Returns HTML for a log message.
  *
  * @param $variables
@@ -230,7 +168,9 @@ function theme_redis_watchdog_message($variables) {
  * @see redis_watchdog_filter_form_validate()
  */
 function redis_watchdog_filter_form($form) {
-  $filters = redis_watchdog_filters();
+
+  // Message types.
+  $wd_types = _redis_watchdog_get_message_types();
 
   $form['filters'] = [
     '#type' => 'fieldset',
