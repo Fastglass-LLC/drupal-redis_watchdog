@@ -199,7 +199,7 @@ class RedisLog {
    *
    * @return array
    */
-  public function getMultipleByType($limit = 50, $tid = NULL) {
+  public function getMultipleByType($limit = 50, $tid = NULL, $page = 0) {
     $logs = [];
     $types = [];
     if ($tid) {
