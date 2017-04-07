@@ -14,7 +14,6 @@ class RedisLog {
 
   public function __construct($prefix = '', $recentlength = 100, $archivelimit = 5000) {
     $this->client = Redis_Client::getManager()->getClient();
-    // TODO: Need to support a site prefix here.
     if (!empty($prefix)) {
       $this->key = 'drupal:watchdog:' . $prefix . ':';
     }

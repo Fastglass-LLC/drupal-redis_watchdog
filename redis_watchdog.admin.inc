@@ -210,7 +210,7 @@ function redis_watchdog_filter_form($form) {
  * Validate result from redis_watchdog administration filter form.
  */
 function redis_watchdog_filter_form_validate($form, &$form_state) {
-  if ($form_state['values']['op'] == t('Filter') && empty($form_state['values']['type']) && empty($form_state['values']['severity'])) {
+  if ($form_state['values']['op'] == t('Filter') && empty($form_state['values']['type'])) {
     form_set_error('type', t('To filter, you must make a selection.'));
   }
 }
