@@ -13,7 +13,7 @@ class RedisLog {
   protected $archivelimit;
 
   public function __construct($prefix = '', $recentlength = 100, $archivelimit = 5000) {
-    $this->client = Redis_Client::getClient();
+    $this->client = Redis_Client::getManager()->getClient();
     // TODO: Need to support a site prefix here.
     if (!empty($prefix)) {
       $this->key = 'drupal:watchdog:' . $prefix . ':';
@@ -195,7 +195,10 @@ class RedisLog {
    * Return multiple log entries for a specific log type.
    *
    * @param int $limit
-   * @param null $tid
+   *  Limit of logs to return.
+   *
+   * @param int $tid
+   *  ID number of the type to return.
    *
    * @return array
    */
@@ -215,6 +218,18 @@ class RedisLog {
       $this->types = $types;
     }
     return $logs;
+  }
+
+  /**
+   * Return the number of logs for a given type.
+   *
+   * @param $tid
+   *  Type ID Number.
+   *
+   * @return int
+   */
+  public function getTypeCount($tid) {
+    return $this->client->lLen($this->key . ':logs:' . $tid);
   }
 
   /**
