@@ -146,6 +146,22 @@ class RedisLog {
   }
 
   /**
+   * Return the count of messages per type
+   *
+   * @return array
+   */
+  public function getMessageTypesCounts() {
+    $types = $this->getMessageTypes();
+    if (empty($this->typescount)) {
+      $this->typescount = [];
+      foreach ($types as $typename => $id) {
+        $this->typescount += [$typename => $this->client->lLen($this->key . ':logs:' . $id)];
+      }
+    }
+    return $this->typescount;
+  }
+
+  /**
    * Retrieve a single log entry
    *
    * @param $wid
