@@ -168,9 +168,9 @@ function theme_redis_watchdog_message($variables) {
  * @see redis_watchdog_filter_form_validate()
  */
 function redis_watchdog_filter_form($form) {
-
   // Message types.
   $wd_types = _redis_watchdog_get_message_types();
+  $wd_types_count = _redis_watchdog_get_message_types_count();
 
   // Build a selection list of log types.
   $form['filters'] = [
@@ -179,7 +179,6 @@ function redis_watchdog_filter_form($form) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   ];
-
   $form['filters']['type'] = [
     '#title' => t('Available types'),
     '#type' => 'select',
@@ -187,7 +186,6 @@ function redis_watchdog_filter_form($form) {
     '#size' => 8,
     '#options' => array_flip($wd_types),
   ];
-
   $form['filters']['actions'] = [
     '#type' => 'actions',
     '#attributes' => ['class' => ['container-inline']],
@@ -196,7 +194,6 @@ function redis_watchdog_filter_form($form) {
     '#type' => 'submit',
     '#value' => t('Filter'),
   ];
-
   return $form;
 }
 
