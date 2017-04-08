@@ -177,7 +177,7 @@ function redis_watchdog_filter_form($form) {
     '#type' => 'fieldset',
     '#title' => t('Filter log messages by type'),
     '#collapsible' => TRUE,
-    '#collapsed' => empty($_SESSION['redis_watchdog_overview_filter']),
+    '#collapsed' => TRUE,
   ];
 
   $form['filters']['type'] = [
@@ -185,7 +185,7 @@ function redis_watchdog_filter_form($form) {
     '#type' => 'select',
     '#multiple' => TRUE,
     '#size' => 8,
-    '#options' => $wd_types,
+    '#options' => array_flip($wd_types),
   ];
 
   $form['filters']['actions'] = [
@@ -196,12 +196,6 @@ function redis_watchdog_filter_form($form) {
     '#type' => 'submit',
     '#value' => t('Filter'),
   ];
-  if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
-    $form['filters']['actions']['reset'] = [
-      '#type' => 'submit',
-      '#value' => t('Reset'),
-    ];
-  }
 
   return $form;
 }
