@@ -140,21 +140,9 @@ class RedisLog {
    */
   public function getMessageTypes() {
     if (empty($this->types)) {
-      $this->types = array_keys($this->client->hGetAll($this->key . ':type'));
+      $this->types = $this->client->hGetAll($this->key . ':type');
     }
     return $this->types;
-  }
-
-  /**
-   * Return the message types. Names and ID numbers.
-   *
-   * @return array
-   */
-  public function getMessageTypesIDs() {
-    if (empty($this->typesIds)) {
-      $this->typesIds = $this->client->hGetAll($this->key . ':type');
-    }
-    return $this->typesIds;
   }
 
   /**
