@@ -54,6 +54,9 @@ function redis_watchdog_overview() {
   // Clear log form.
   $build['redis_watchdog_clear_log_form'] = drupal_get_form('redis_watchdog_clear_log_form');
 
+  // Summary of log types stored and the number of items in the log.
+  $build['redis_watchdog_type_count_table'] = redis_watchdog_log_type_count_table();
+
   // Table of log items.
   $build['redis_watchdog_table'] = [
     '#theme' => 'table',
@@ -170,7 +173,6 @@ function theme_redis_watchdog_message($variables) {
 function redis_watchdog_filter_form($form) {
   // Message types.
   $wd_types = _redis_watchdog_get_message_types();
-  $wd_types_count = _redis_watchdog_get_message_types_count();
 
   // Build a selection list of log types.
   $form['filters'] = [
@@ -195,6 +197,41 @@ function redis_watchdog_filter_form($form) {
     '#value' => t('Filter'),
   ];
   return $form;
+}
+
+/**
+ * This returns a themeable form that displays the total log count for different
+ * types of logs.
+ *
+ * @return array
+ */
+function redis_watchdog_log_type_count_table() {
+  // Get the counts.
+  $wd_types_count = _redis_watchdog_get_message_types_count();
+  $header = [
+    t('Log Type'),
+    t('Count'),
+  ];
+  $rows = [];
+  foreach ($wd_types_count as $key => $value) {
+    $rows[] = [
+      'data' => [
+        // Cells
+        $key,
+        $value,
+      ],
+    ];
+  }
+  // Table of log items.
+  $build['redis_watchdog_type_count_table'] = [
+    '#theme' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+    '#attributes' => ['id' => 'admin-redis_watchdog_type_count'],
+    '#empty' => t('No log messages available.'),
+  ];
+
+  return $build;
 }
 
 /**
