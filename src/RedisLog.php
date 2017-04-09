@@ -215,14 +215,21 @@ class RedisLog {
    * @param int $tid
    *  ID number of the type to return.
    *
+   * @param int $page
+   *  The page being requested.
+   *
    * @return array
    */
   public function getMultipleByType($limit = 50, $tid = NULL, $page = 0) {
+    // Start point for the range.
+    $start = (empty($page)) ? 0 : $limit * $page;
+    // End point for the range.
+    $end = $start + $limit;
     $logs = [];
     $types = [];
     if ($tid) {
       // @todo provide a range control.
-      $res = $this->client->lRange($this->key . ':logs:' . $tid, 0, -1);
+      $res = $this->client->lRange($this->key . ':logs:' . $tid, $start, $end);
       foreach ($res as $entry) {
         $entry = unserialize($entry);
         $logs[] = $entry;

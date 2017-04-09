@@ -302,10 +302,18 @@ function redis_watchdog_clear_log_submit() {
 
 /**
  * Form builder for the event type reports.
+ *
+ * @param int $tid
+ *  Type id to return.
+ *
+ * @param int $page
+ *  Current page number.
+ *
+ * @return array
  */
-function redis_watchdog_type() {
-
+function redis_watchdog_type($tid, $page = 0) {
   $rows = [];
+  $pagesize = 50;
   $classes = [
     WATCHDOG_DEBUG => 'redis_watchdog-debug',
     WATCHDOG_INFO => 'redis_watchdog-info',
