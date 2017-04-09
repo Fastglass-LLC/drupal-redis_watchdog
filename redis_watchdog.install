@@ -12,4 +12,7 @@
 
 function redis_watchdog_uninstall(){
   variable_del('redis_watchdogprefix');
+  variable_del('redis_watchdogrecentlimit');
+  variable_del('redis_watchdogtypepagelimit');
+  variable_del('redis_watchdogarchivelimit');
 }
