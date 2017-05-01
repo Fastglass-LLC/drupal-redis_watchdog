@@ -57,16 +57,21 @@ function redis_watchdog_overview() {
   // Summary of log types stored and the number of items in the log.
   $build['redis_watchdog_type_count_table'] = redis_watchdog_log_type_count_table();
 
-  // Table of log items.
-  $build['redis_watchdog_table'] = [
-    '#theme' => 'table',
-    '#header' => $header,
-    '#rows' => $rows,
-    '#attributes' => ['id' => 'admin-redis_watchdog'],
-    '#empty' => t('No log messages available.'),
-  ];
-  $build['redis_watchdog_pager'] = ['#theme' => 'pager'];
+  if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
+    // Create table of a specific type.
+  }
+  else {
+    // Table of log items.
+    $build['redis_watchdog_table'] = [
+      '#theme' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#attributes' => ['id' => 'admin-redis_watchdog'],
+      '#empty' => t('No log messages available.'),
+    ];
 
+    $build['redis_watchdog_pager'] = ['#theme' => 'pager'];
+  }
   return $build;
 }
 
@@ -196,6 +201,12 @@ function redis_watchdog_filter_form($form) {
     '#type' => 'submit',
     '#value' => t('Filter'),
   ];
+  if(!empty($_SESSION['redis_watchdog_overview_filter'])) {
+    $form['filters']['actions']['submit'] = [
+      '#type' => 'submit',
+      '#value' => t('Reset'),
+    ];
+  }
   return $form;
 }
 
@@ -250,13 +261,11 @@ function redis_watchdog_filter_form_validate($form, &$form_state) {
  */
 function redis_watchdog_filter_form_submit($form, &$form_state) {
   $op = $form_state['values']['op'];
-  $filters = redis_watchdog_filters();
   switch ($op) {
     case t('Filter'):
-      foreach ($filters as $name => $filter) {
-        if (isset($form_state['values'][$name])) {
-          $_SESSION['redis_watchdog_overview_filter'][$name] = $form_state['values'][$name];
-        }
+      // If the type is not empty send the browser to the type form.
+      if (!empty($form_state['values']['type'])) {
+        $_SESSION['redis_watchdog_overview_filter'] = $form_state['values']['type'];
       }
       break;
     case t('Reset'):
