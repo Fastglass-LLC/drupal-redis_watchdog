@@ -57,8 +57,10 @@ function redis_watchdog_overview() {
   // Summary of log types stored and the number of items in the log.
   $build['redis_watchdog_type_count_table'] = redis_watchdog_log_type_count_table();
 
-  if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
+  if (isset($_SESSION['redis_watchdog_overview_filter']) && !empty($_SESSION['redis_watchdog_overview_filter'])) {
     // Create table of a specific type.
+    $typeid = check_plain(array_pop($_SESSION['redis_watchdog_overview_filter']));
+    $build['redis_watchdog_table'] = redis_watchdog_type($typeid);
   }
   else {
     // Table of log items.
@@ -200,14 +202,57 @@ function redis_watchdog_filter_form($form) {
   $form['filters']['actions']['submit'] = [
     '#type' => 'submit',
     '#value' => t('Filter'),
+    '#submit' => ['redis_watchdog_filter_form_submit'],
   ];
-  if(!empty($_SESSION['redis_watchdog_overview_filter'])) {
+  if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
     $form['filters']['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => t('Reset'),
+      '#submit' => ['redis_watchdog_filter_reset_submit'],
     ];
   }
+  if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
+    $form['filters']['type']['#default_value'] = $_SESSION['redis_watchdog_overview_filter'];
+    $form['filters']['#collapsed'] = FALSE;
+  }
   return $form;
+}
+
+/**
+ * Validate result from redis_watchdog administration filter form.
+ */
+function redis_watchdog_filter_form_validate($form, &$form_state) {
+  if ($form_state['values']['op'] == t('Filter') && empty($form_state['values']['type'])) {
+    form_set_error('type', t('To filter, you must make a selection.'));
+  }
+}
+
+/**
+ * Process result from redis_watchdog administration filter form.
+ *
+ * @todo form filter not working.
+ */
+function redis_watchdog_filter_form_submit($form, $form_state) {
+  $op = $form_state['values']['op'];
+  switch ($op) {
+    case 'filter':
+      // If the type is not empty set the page to the type form.
+      if (!empty($form_state['values']['type'])) {
+        $_SESSION['redis_watchdog_overview_filter'] = $form_state['values']['type'];
+      }
+      break;
+    case 'reset':
+      unset($_SESSION['redis_watchdog_overview_filter']);
+      unset($form_state['filters']['type']);
+      break;
+  }
+  return 'admin/reports/redis_watchdog';
+}
+
+function redis_watchdog_filter_reset_submit($form, &$form_state){
+  unset($_SESSION['redis_watchdog_overview_filter']);
+  unset($form_state['filters']['type']);
+  $form_state['rebuild'] = FALSE;
 }
 
 /**
@@ -243,36 +288,6 @@ function redis_watchdog_log_type_count_table() {
   ];
 
   return $build;
-}
-
-/**
- * Validate result from redis_watchdog administration filter form.
- */
-function redis_watchdog_filter_form_validate($form, &$form_state) {
-  if ($form_state['values']['op'] == t('Filter') && empty($form_state['values']['type'])) {
-    form_set_error('type', t('To filter, you must make a selection.'));
-  }
-}
-
-/**
- * Process result from redis_watchdog administration filter form.
- *
- * @todo form filter not working.
- */
-function redis_watchdog_filter_form_submit($form, &$form_state) {
-  $op = $form_state['values']['op'];
-  switch ($op) {
-    case t('Filter'):
-      // If the type is not empty send the browser to the type form.
-      if (!empty($form_state['values']['type'])) {
-        $_SESSION['redis_watchdog_overview_filter'] = $form_state['values']['type'];
-      }
-      break;
-    case t('Reset'):
-      $_SESSION['redis_watchdog_overview_filter'] = [];
-      break;
-  }
-  return 'admin/reports/redis_watchdog';
 }
 
 /**
