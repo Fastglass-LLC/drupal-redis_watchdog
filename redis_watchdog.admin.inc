@@ -57,10 +57,16 @@ function redis_watchdog_overview() {
   // Summary of log types stored and the number of items in the log.
   $build['redis_watchdog_type_count_table'] = redis_watchdog_log_type_count_table();
 
+  switch ($_SESSION) {
+    case 'redis_watchdog_overview_filter' :
+      $typeid = check_plain(array_pop($_SESSION['redis_watchdog_overview_filter']));
+      $build['redis_watchdog_table'] = redis_watchdog_type($typeid);
+      break:
+  }
+
   if (isset($_SESSION['redis_watchdog_overview_filter']) && !empty($_SESSION['redis_watchdog_overview_filter'])) {
     // Create table of a specific type.
-    $typeid = check_plain(array_pop($_SESSION['redis_watchdog_overview_filter']));
-    $build['redis_watchdog_table'] = redis_watchdog_type($typeid);
+
   }
   else {
     // Table of log items.
@@ -249,7 +255,7 @@ function redis_watchdog_filter_form_submit($form, $form_state) {
   return 'admin/reports/redis_watchdog';
 }
 
-function redis_watchdog_filter_reset_submit($form, &$form_state){
+function redis_watchdog_filter_reset_submit($form, &$form_state) {
   unset($_SESSION['redis_watchdog_overview_filter']);
   unset($form_state['filters']['type']);
   $form_state['rebuild'] = FALSE;
