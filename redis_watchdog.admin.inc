@@ -200,15 +200,15 @@ function redis_watchdog_filter_form($form) {
     '#type' => 'actions',
     '#attributes' => ['class' => ['container-inline']],
   ];
-  $form['filters']['buttons'] = [
-    '#name' => 'action',
+  $form['filters']['buttons']['filter'] = [
+    '#name' => 'theaction',
     '#type' => 'submit',
     '#value' => t('Filter'),
   ];
 
   if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
-    $form['filters']['buttons1'] = [
-      '#name' => 'action',
+    $form['filters']['buttons']['reset'] = [
+      '#name' => 'theaction',
       '#type' => 'submit',
       '#value' => t('Reset'),
     ];
@@ -235,7 +235,7 @@ function redis_watchdog_filter_form_validate($form, &$form_state) {
  * @todo form filter not working.
  */
 function redis_watchdog_filter_form_submit($form, &$form_state) {
-  $op = $form_state['values']['action'];
+  $op = $form_state['values']['theaction'];
   kpr($form_state);
 
   switch ($op) {
@@ -250,7 +250,7 @@ function redis_watchdog_filter_form_submit($form, &$form_state) {
       break;
   }
 
-
+exit;
   return 'admin/reports/redis_watchdog';
 }
 
@@ -388,6 +388,17 @@ function redis_watchdog_type($tid, $page = 0) {
     '#empty' => t('No log messages available.'),
   ];
   $build['redis_watchdog_pager'] = ['#theme' => 'pager'];
+
+  return $build;
+}
+
+/**
+ * Menu callback; display operations for exporting logs to a CSV.
+ */
+function redis_watchdog_export() {
+  $build = [];
+
+  $build['#markup'] = t('Work in progress. Export controls');
 
   return $build;
 }
