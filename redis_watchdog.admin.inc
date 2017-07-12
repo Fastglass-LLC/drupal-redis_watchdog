@@ -63,7 +63,8 @@ function redis_watchdog_overview() {
   if (isset($_SESSION['redis_watchdog_overview_filter']) && !empty($_SESSION['redis_watchdog_overview_filter'])) {
     $typeid = check_plain(array_pop($_SESSION['redis_watchdog_overview_filter']));
     $build['redis_watchdog_table'] = redis_watchdog_type($typeid);
-  } else {
+  }
+  else {
     $build['redis_watchdog_table'] = [
       '#theme' => 'table',
       '#header' => $header,
@@ -185,7 +186,7 @@ function redis_watchdog_filter_form($form) {
   $form['filters'] = [
     '#type' => 'fieldset',
     '#title' => t('Filter log messages by type'),
-    '#collapsible' => TRUE,
+    '#collapsible' => empty($_SESSION['redis_watchdog_overview_filter']),
     '#collapsed' => TRUE,
   ];
   $form['filters']['type'] = [
@@ -200,20 +201,21 @@ function redis_watchdog_filter_form($form) {
     '#attributes' => ['class' => ['container-inline']],
   ];
   $form['filters']['buttons']['submit'] = [
+    '#name' => 'action',
     '#type' => 'submit',
     '#value' => t('Filter'),
   ];
 
   if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
-    $form['filters']['buttons']['reset'] = array(
+    $form['filters']['buttons']['reset'] = [
+      '#name' => 'action',
       '#type' => 'submit',
       '#value' => t('Reset'),
-    );
+    ];
   }
 
   if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
     $form['filters']['type']['#default_value'] = $_SESSION['redis_watchdog_overview_filter'];
-    $form['filters']['#collapsed'] = FALSE;
   }
   return $form;
 }
@@ -234,6 +236,8 @@ function redis_watchdog_filter_form_validate($form, &$form_state) {
  */
 function redis_watchdog_filter_form_submit($form, &$form_state) {
   $op = $form_state['values']['op'];
+  kpr($form_state);
+exit;
   switch ($op) {
     case t('Filter'):
       // If the type is not empty set the page to the type form.
@@ -245,6 +249,8 @@ function redis_watchdog_filter_form_submit($form, &$form_state) {
       $_SESSION['redis_watchdog_overview_filter'] = [];
       break;
   }
+  $form_state['rebuild'] = FALSE;
+
   return 'admin/reports/redis_watchdog';
 }
 
