@@ -200,14 +200,14 @@ function redis_watchdog_filter_form($form) {
     '#type' => 'actions',
     '#attributes' => ['class' => ['container-inline']],
   ];
-  $form['filters']['buttons']['submit'] = [
+  $form['filters']['buttons'] = [
     '#name' => 'action',
     '#type' => 'submit',
     '#value' => t('Filter'),
   ];
 
   if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
-    $form['filters']['buttons']['reset'] = [
+    $form['filters']['buttons1'] = [
       '#name' => 'action',
       '#type' => 'submit',
       '#value' => t('Reset'),
@@ -235,9 +235,9 @@ function redis_watchdog_filter_form_validate($form, &$form_state) {
  * @todo form filter not working.
  */
 function redis_watchdog_filter_form_submit($form, &$form_state) {
-  $op = $form_state['values']['op'];
+  $op = $form_state['values']['action'];
   kpr($form_state);
-exit;
+
   switch ($op) {
     case t('Filter'):
       // If the type is not empty set the page to the type form.
@@ -249,7 +249,7 @@ exit;
       $_SESSION['redis_watchdog_overview_filter'] = [];
       break;
   }
-  $form_state['rebuild'] = FALSE;
+
 
   return 'admin/reports/redis_watchdog';
 }
