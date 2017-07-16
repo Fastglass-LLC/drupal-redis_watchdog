@@ -1,0 +1,13 @@
+{
+  "name": "drupal/redis_watchdog",
+  "description": "Redis DB log replacement.",
+  "version": "7.x-4.7",
+  "homepage": "https://www.drupal.org/project/redis_watchdog",
+  "license": "GNU-2.0+",
+  "keywords": [
+    "Redis",
+    "cache",
+    "php"
+  ],
+
+}
