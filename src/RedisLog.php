@@ -257,7 +257,7 @@ class RedisLog {
     $types = $this->getMessageTypes();
     $logs = [];
     foreach ($types as $logid) {
-      $curr = $this->client->lGetRange($this->key . ':logs:' . $logid, 0 -1);
+      $curr = $this->client->lGetRange($this->key . ':logs:' . $logid, 0, -1);
       $logs = array_merge($logs, $curr);
     }
     return $logs;
