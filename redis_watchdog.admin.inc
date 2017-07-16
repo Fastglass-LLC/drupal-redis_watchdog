@@ -234,8 +234,6 @@ function redis_watchdog_filter_form_validate($form, &$form_state) {
  */
 function redis_watchdog_filter_form_submit($form, &$form_state) {
   $op = $form_state['values']['theaction'];
-  kpr($form_state);
-
   switch ($op) {
     case t('Filter'):
       // If the type is not empty set the page to the type form.
@@ -247,8 +245,6 @@ function redis_watchdog_filter_form_submit($form, &$form_state) {
       $_SESSION['redis_watchdog_overview_filter'] = [];
       break;
   }
-
-exit;
   return 'admin/reports/redis_watchdog';
 }
 
