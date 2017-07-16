@@ -401,7 +401,8 @@ function redis_watchdog_export() {
  * Menu callback; display operations for exporting logs to a CSV.
  */
 function redis_watchdog_export_download() {
-  redis_watchdog_download_send_headers('testfile');
+  $prefix = variable_get('redis_watchdogprefix', '');
+  redis_watchdog_download_send_headers('drupal-redis-watchdog' . $prefix . '-export.csv');
   echo redis_watchdog_csv_export();
   die();
 }
