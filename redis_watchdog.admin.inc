@@ -8,8 +8,6 @@
  */
 function redis_watchdog_overview() {
 
-  kpr($_SESSION);
-
   $rows = [];
   $classes = [
     WATCHDOG_DEBUG => 'redis_watchdog-debug',
