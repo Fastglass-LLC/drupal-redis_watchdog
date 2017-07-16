@@ -397,3 +397,11 @@ function redis_watchdog_export() {
   return $build;
 }
 
+/**
+ * Menu callback; display operations for exporting logs to a CSV.
+ */
+function redis_watchdog_export_download() {
+  redis_watchdog_download_send_headers('testfile');
+  echo redis_watchdog_csv_export();
+  die();
+}
