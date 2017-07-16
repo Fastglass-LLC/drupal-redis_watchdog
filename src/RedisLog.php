@@ -6,10 +6,15 @@
  * Provide log functions to Drupal to replace DBlog.
  */
 class RedisLog {
+
   protected $client;
+
   protected $key;
+
   protected $types = [];
+
   protected $recent;
+
   protected $archivelimit;
 
   public function __construct($prefix = '', $recentlength = 100, $archivelimit = 5000) {
@@ -238,6 +243,22 @@ class RedisLog {
         }
       }
       $this->types = $types;
+    }
+    return $logs;
+  }
+
+  /**
+   * Return all logs stored in redis. Be cautious of use. Performance impact.
+   *
+   * @return array
+   */
+
+  public function getAllMessages() {
+    $types = $this->getMessageTypes();
+    $logs = [];
+    foreach ($types as $logid) {
+      $curr = $this->client->lGetRange($this->key . ':logs:' . $logid, 0 -1);
+      $logs = array_merge($logs, $curr);
     }
     return $logs;
   }
