@@ -30,7 +30,7 @@ function redis_watchdog_drush_command() {
 function redis_watchdog_drush_help($section) {
   switch ($section) {
     case 'drush:redis-watchdog-export':
-      return t('Export the logs in Redis to a CSV file');
+      return t('Export the logs in Redis to a CSV file. You must pass an argument to specify the path to the CSV to be created. Depending on the size of your logs, this operation could require a lot of time.');
   }
 }
 
@@ -41,6 +41,6 @@ function redis_watchdog_drush_help($section) {
 function drush_redis_watchdog_export($filepath) {
   $data = redis_watchdog_csv_export();
   $df = fopen($filepath, 'w');
-  fwrite($df,$data);
+  fwrite($df, $data);
   fclose($df);
 }
