@@ -32,9 +32,6 @@ class RedisLog {
   /**
    * Create a log entry.
    *
-   * @todo To create sortable data, the types need to be processed in this
-   *   function to save the type in the log creation process.
-   *
    * @param array $log_entry
    *
    * @see https://github.com/phpredis/phpredis#hset
@@ -169,7 +166,7 @@ class RedisLog {
   /**
    * Retrieve a single log entry
    *
-   * @param $wid
+   * @param int $wid
    *  Log key ID number.
    *
    * @return bool|mixed
@@ -266,7 +263,7 @@ class RedisLog {
   /**
    * Return the number of logs for a given type.
    *
-   * @param $tid
+   * @param int $tid
    *  Type ID Number.
    *
    * @return int
@@ -303,4 +300,3 @@ class RedisLog {
   }
 
 }
-
