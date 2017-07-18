@@ -408,8 +408,7 @@ function redis_watchdog_export() {
 }
 
 function redis_watchdog_export_submit($form, &$form_state){
-  $form_state['rebuild'] = TRUE;
-  $form_state['redirect'] = ['admin/reports/redislog/export/download'];
+  $form_state['redirect'] = 'admin/reports/redislog/export/download';
 }
 
 /**
