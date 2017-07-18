@@ -16,6 +16,9 @@ function redis_watchdog_drush_command() {
     'description' => t('Export the Redis Watchdog logs to CSV'),
     'drupal dependencies' => ['redis_watchdog'],
     'aliases' => ['rwe'],
+    'arguements' => [
+      'filepath' => 'File path for the export.',
+    ],
   ];
   return $items;
 }
@@ -32,6 +35,9 @@ function redis_watchdog_drush_help($section) {
 }
 
 
-function drush_redis_watchdog_export() {
-  
+/**
+ * Callback from the redis-watchdog-export command.
+ */
+function drush_redis_watchdog_export($filepath) {
+
 }
