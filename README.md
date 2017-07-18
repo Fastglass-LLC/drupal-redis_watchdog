@@ -24,3 +24,14 @@ Uninstallation
 ------------------------------------
 Uninstalling this module will remove data for the function of the module but your
 data in Redis will remain.
+
+Drush integration
+------------------------------------
+A drush command is provided to export the logs to a CSV file. Export is also
+available via the UI but for large sites this process could take a while and
+might be best executed in PHP CLI. The command to use the drush export is as
+follows:
+
+  `drush redis-watchdog-export <filename>`
+  or `drussh rwe <filename>`
+  
