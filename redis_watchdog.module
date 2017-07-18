@@ -34,7 +34,7 @@ function redis_watchdog_menu() {
     'access arguments' => ['access site reports'],
     'weight' => -1,
     'file' => 'redis_watchdog.admin.inc',
-    'type' => MENU_LOCAL_TASK,
+    'type' => MENU_LOCAL_ACTION,
   ];
   $items['admin/reports/redislog/export/download'] = [
     'title' => 'File download router.',
