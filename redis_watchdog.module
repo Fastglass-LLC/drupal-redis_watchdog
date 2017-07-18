@@ -29,7 +29,8 @@ function redis_watchdog_menu() {
   $items['admin/reports/redislog/export'] = [
     'title' => 'Export Redis Log Messages',
     'description' => 'Export logs to a CSV file.',
-    'page callback' => 'redis_watchdog_export',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => ['redis_watchdog_export'],
     'access arguments' => ['access site reports'],
     'weight' => -1,
     'file' => 'redis_watchdog.admin.inc',
@@ -162,7 +163,10 @@ function redis_watchdog_csv_export() {
   ob_start();
   $df = fopen("php://output", 'w');
   foreach ($logs_to_export as $row) {
-    fputcsv($df, $row);
+    // Convert the object to an array.
+    $data = unserialize($row);
+    $data = (array) $data;
+    fputcsv($df, $data);
   }
   fclose($df);
   return ob_get_clean();

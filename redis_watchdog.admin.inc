@@ -390,11 +390,26 @@ function redis_watchdog_type($tid, $page = 0) {
  * Menu callback; display operations for exporting logs to a CSV.
  */
 function redis_watchdog_export() {
-  $build = [];
 
-  $build['#markup'] = t('Work in progress. Export controls');
+  $form['redis_watchdog_export'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Download Logs'),
+    '#description' => t('Click the link below to export all of the logs in Redis to a CSV file.'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+  ];
+  $form['redis_watchdog_export']['clear'] = [
+    '#type' => 'submit',
+    '#value' => t('Download log messages'),
+    '#submit' => ['redis_watchdog_export_submit'],
+  ];
 
-  return $build;
+  return $form;
+}
+
+function redis_watchdog_export_submit($form, &$form_state){
+  $form_state['rebuild'] = TRUE;
+  $form_state['redirect'] = ['admin/reports/redislog/export/download'];
 }
 
 /**
