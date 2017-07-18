@@ -39,5 +39,8 @@ function redis_watchdog_drush_help($section) {
  * Callback from the redis-watchdog-export command.
  */
 function drush_redis_watchdog_export($filepath) {
-
+  $data = redis_watchdog_csv_export();
+  $df = fopen($filepath, 'w');
+  fwrite($df,$data);
+  fclose($df);
 }
