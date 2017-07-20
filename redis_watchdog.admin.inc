@@ -175,6 +175,7 @@ function theme_redis_watchdog_message($variables) {
  * @ingroup forms
  * @see redis_watchdog_filter_form_submit()
  * @see redis_watchdog_filter_form_validate()
+ * @see redis_watchdog_overview()
  */
 function redis_watchdog_filter_form($form) {
   // Message types.
@@ -198,13 +199,13 @@ function redis_watchdog_filter_form($form) {
     '#type' => 'actions',
     '#attributes' => ['class' => ['container-inline']],
   ];
-  $form['filters']['buttons']['filter'] = [
+  $form['filters']['actions']['submit'] = [
     '#type' => 'submit',
     '#value' => t('Filter'),
   ];
 
   if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
-    $form['filters']['buttons']['reset'] = [
+    $form['filters']['actions']['reset'] = [
       '#type' => 'submit',
       '#value' => t('Reset'),
     ];
@@ -407,11 +408,11 @@ function redis_watchdog_export() {
 
 /**
  * Submit handler for export page.
- * 
+ *
  * @param $form
  * @param $form_state
  */
-function redis_watchdog_export_submit($form, &$form_state){
+function redis_watchdog_export_submit($form, &$form_state) {
   $form_state['redirect'] = 'admin/reports/redislog/export/download';
 }
 
