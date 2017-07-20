@@ -67,7 +67,7 @@ function _redis_watchdog_get_message_types() {
 }
 
 /**
- * Private function to return the types of messages stored.
+ * Private function to return the count of message stored.
  *
  * @return array|mixed
  */
