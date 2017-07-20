@@ -103,25 +103,15 @@ class RedisLog {
   }
 
   /**
-   * Returns the value of the type counter and pushes it up by 1 when called.
+   * Returns the value of the typeid counter. This will indicate the number of
+   * types stored
    *
    * @return integer
    *
    * @see https://github.com/phpredis/phpredis#hget
    */
-  protected function getTypeCounter() {
-    return $this->client->hGet($this->key . ':counters', 'types');
-  }
-
-  /**
-   * Returns the value of the type counter and pushes it up by 1 when called.
-   *
-   * @return integer
-   *
-   * @see https://github.com/phpredis/phpredis#hincrby
-   */
-  protected function getPushTypeCounter() {
-    return $this->client->hIncrBy($this->key . ':counters', 'types', 1);
+  protected function getTypeIDCounterValue() {
+    return $this->client->hGet($this->key . ':counters', 'typeid');
   }
 
   /**
