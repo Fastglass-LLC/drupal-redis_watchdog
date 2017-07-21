@@ -194,3 +194,18 @@ function redis_watchdog_download_send_headers($filename) {
   header('Content-Disposition: attachment;filename={$filename}');
   header('Content-Transfer-Encoding: binary');
 }
+
+/**
+ * Destroys all Redis information.
+ *
+ * @return bool
+ */
+function redis_watchdog_redis_destroy() {
+  $client = redis_watchdog_client();
+  if ($client->clear()){
+   return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}
