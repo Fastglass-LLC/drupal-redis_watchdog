@@ -281,12 +281,20 @@ class RedisLog {
    * Clear all information from logs.
    */
   public function clear() {
+    $typecount = $this->getTypeIDCounterValue();
     $this->client->multi();
+    for ($i = 1; $i <= $typecount; $i++) {
+      $this->client->delete($this->key . ':logs:' . $i);
+    }
     $this->client->delete($this->key . ':type');
     $this->client->delete($this->key . ':counters');
     $this->client->delete($this->key . ':recentlogs');
     $this->client->delete($this->key);
-    $this->client->exec();
+    if ($this->client->exec()) {
+      return TRUE;
+    }
+    else {
+      return FALSE;
+    }
   }
-
 }
