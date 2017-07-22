@@ -183,7 +183,7 @@ function redis_watchdog_download_send_headers($filename) {
   $now = gmdate('D, d M Y H:i:s');
   header('Expires: Tue, 03 Jul 2001 06:00:00 GMT');
   header('Cache-Control: max-age=0, no-cache, must-revalidate, proxy-revalidate');
-  header('Last-Modified: {$now} GMT');
+  header('Last-Modified: ' . $now . ' GMT');
 
   // Force download.
   header('Content-Type: application/force-download');
@@ -191,7 +191,7 @@ function redis_watchdog_download_send_headers($filename) {
   header('Content-Type: application/download');
 
   // Disposition and encoding on response body.
-  header('Content-Disposition: attachment;filename='. $filename);
+  header('Content-Disposition: attachment;filename=' . $filename);
   header('Content-Transfer-Encoding: binary');
 }
 
@@ -202,8 +202,8 @@ function redis_watchdog_download_send_headers($filename) {
  */
 function redis_watchdog_redis_destroy() {
   $client = redis_watchdog_client();
-  if ($client->clear()){
-   return TRUE;
+  if ($client->clear()) {
+    return TRUE;
   }
   else {
     return FALSE;
