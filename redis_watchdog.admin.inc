@@ -421,7 +421,13 @@ function redis_watchdog_export_submit($form, &$form_state) {
  */
 function redis_watchdog_export_download() {
   $prefix = variable_get('redis_watchdogprefix', '');
-  redis_watchdog_download_send_headers('drupal-redis-watchdog' . $prefix . '-export.csv');
+  if (empty($prefix)){
+    $prefix = '-';
+  }
+  else {
+    $prefix = '-' . $prefix . '-';
+  }
+  redis_watchdog_download_send_headers('drupal-redis-watchdog' . $prefix . 'export.csv');
   echo redis_watchdog_csv_export();
   die();
 }
