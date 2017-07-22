@@ -409,8 +409,8 @@ function redis_watchdog_export() {
 /**
  * Submit handler for export page.
  *
- * @param $form
- * @param $form_state
+ * @param array $form
+ * @param array $form_state
  */
 function redis_watchdog_export_submit($form, &$form_state) {
   $form_state['redirect'] = 'admin/reports/redislog/export/download';
