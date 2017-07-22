@@ -58,8 +58,8 @@ function redis_watchdog_overview() {
   // Summary of log types stored and the number of items in the log.
   $build['redis_watchdog_type_count_table'] = redis_watchdog_log_type_count_table();
 
-  if (isset($_SESSION['redis_watchdog_overview_filter']) && !empty($_SESSION['redis_watchdog_overview_filter'])) {
-    $typeid = check_plain(array_pop($_SESSION['redis_watchdog_overview_filter']));
+  if (isset($_SESSION['redis_watchdog_overview_filter']['type']) && !empty($_SESSION['redis_watchdog_overview_filter']['type'])) {
+    $typeid = check_plain(array_pop($_SESSION['redis_watchdog_overview_filter']['type']));
     $build['redis_watchdog_table'] = redis_watchdog_type($typeid);
   }
   else {
@@ -211,8 +211,8 @@ function redis_watchdog_filter_form($form) {
     ];
   }
 
-  if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
-    $form['filters']['type']['#default_value'] = $_SESSION['redis_watchdog_overview_filter'];
+  if (!empty($_SESSION['redis_watchdog_overview_filter']['type'])) {
+    $form['filters']['type']['#default_value'] = $_SESSION['redis_watchdog_overview_filter']['type'];
   }
   return $form;
 }
@@ -237,7 +237,7 @@ function redis_watchdog_filter_form_submit($form, &$form_state) {
     case t('Filter'):
       // If the type is not empty set the page to the type form.
       if (isset($form_state['values']['type']) && !empty($form_state['values']['type'])) {
-        $_SESSION['redis_watchdog_overview_filter'] = $form_state['values']['type'];
+        $_SESSION['redis_watchdog_overview_filter']['type'] = $form_state['values']['type'];
       }
       break;
     case t('Reset'):
