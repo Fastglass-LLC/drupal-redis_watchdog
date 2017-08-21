@@ -20,6 +20,20 @@ Installation
 Place the module in your Drupal website and enable the module. The reports will
 be available at admin/reports/redislog in your site.
 
+PHP Memory Settings
+------------------------------------
+If your site has generated a lot of logs you could run into a memory issue with
+PHP on your server. If the recent logs page is crashing with a 500 error, you
+may be exceeding the memory allowed by the PHP installation on your web server.
+The reason is the amount of data Redis is attempting to retrieve is very large
+to fix this you have to do one of two things; increase memory to PHP for a
+single script (be careful with this setting) or export your logs to CSV then clear
+redis with Drush. To prevent this from happening, set your log limits in the
+module to something reasonable.
+
+Pagination of the logs is needed to help fix this problem, but it has not been
+implemented yet.
+
 Uninstallation
 ------------------------------------
 Uninstalling this module will remove data for the function of the module but your
