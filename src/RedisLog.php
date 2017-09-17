@@ -1,5 +1,8 @@
 <?php
 
+namespace Drupal\redis_watchdog;
+use Drupal\redis;
+
 /**
  * Class RedisLog
  *
@@ -17,7 +20,7 @@ class RedisLog {
 
   protected $archivelimit;
 
-  public function __construct($prefix = '', $recentlength = 100, $archivelimit = 5000) {
+  public function __construct($prefix = '', $recentlength = 200, $archivelimit = 5000) {
     $this->client = Redis_Client::getManager()->getClient();
     if (!empty($prefix)) {
       $this->key = 'drupal:watchdog:' . $prefix . ':';

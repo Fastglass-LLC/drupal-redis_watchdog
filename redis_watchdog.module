@@ -1,5 +1,7 @@
 <?php
 
+namespace Drupal\redis_watchdog;
+
 /**
  * Implements hook_menu().
  */
