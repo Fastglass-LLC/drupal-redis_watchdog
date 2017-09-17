@@ -1,0 +1,39 @@
+redis_watchdog.logs:
+  path: 'admin/reports/redislog'
+  defaults:
+    _controller: '\Drupal\redis_watchdog\Form\RedisWatchdogOverview'
+    _title: 'Recent Redis Log Messages'
+  requirements:
+    _permission: 'access site reports'
+
+redis_watchdog.event:
+  path: 'admin/reports/redislog/event/{event_id}'
+  defaults:
+    _form: '\Drupal\redis_watchdog\Pages\EventDetails::buildEventForm'
+    _title: 'Redis Log Event Details'
+   requirements:
+    _permission: 'access site reports'
+
+redis_watchdog.type:
+  path: 'admin/reports/redislog/type/{type_id}/{page_number}'
+  defaults:
+    _form: '\Drupal\redis_watchdog\Form\TypeDetailsForm::buildTypeForm'
+    _title: 'Log Type Report'
+   requirements:
+    _permission: 'access site reports'
+
+redis_watchdog.export:
+  path: 'admin/reports/redislog/export'
+  defaults:
+    _form: '\Drupal\redis_watchdog\Form\ExportForm'
+    _title: 'Export Redis Log Messages'
+   requirements:
+    _permission: 'access site reports'
+
+redis_watchdog.export-download:
+  path: 'admin/reports/redislog/export/download'
+  defaults:
+    _form: '\Drupal\redis_watchdog\Form\Download::downloadForm'
+    _title: 'File download router'
+   requirements:
+    _permission: 'access site reports'

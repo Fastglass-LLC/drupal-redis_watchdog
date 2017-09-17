@@ -1,0 +1,8 @@
+name: 'Redis Watchdog'
+type: module
+description: 'Redis logging backend and user interface.'
+core: 8.x
+package: 'Performance'
+dependencies:
+  - redis
+php: 7.0

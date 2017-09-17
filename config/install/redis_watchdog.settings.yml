@@ -1,0 +1,3 @@
+watchdogprefix: ''
+recentlimit: 200
+archivelimit: 5000
