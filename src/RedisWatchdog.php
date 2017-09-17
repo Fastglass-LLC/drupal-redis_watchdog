@@ -13,7 +13,7 @@ class RedisWatchdog {
    * @return object
    */
 
-  public function redis_watchdog_client() {
+  public static function redis_watchdog_client() {
     $config = \Drupal::config('redis_watchdog.settings');
     $prefix = $config->get('watchdogprefix');
     $limit = $config->get('recentlimit');
@@ -28,8 +28,8 @@ class RedisWatchdog {
    * @return string
    */
 
-  public function redis_watchdog_csv_export() {
-    $client = $this->redis_watchdog_client();
+  public static function redis_watchdog_csv_export() {
+    $client = self::redis_watchdog_client();
     $logs_to_export = $client->getAllMessages();
     ob_start();
     $df = fopen('php://output', 'w');
@@ -49,8 +49,7 @@ class RedisWatchdog {
    *
    * @param string $filename
    */
-  public function redis_watchdog_download_send_headers($filename) {
-    $filename = filter_xss($filename);
+  public static function redis_watchdog_download_send_headers($filename) {
     $filename = Util\Xss::filter($filename);
     // Disable caching.
     $now = gmdate('D, d M Y H:i:s');
@@ -73,8 +72,8 @@ class RedisWatchdog {
    *
    * @return bool
    */
-  public function redis_watchdog_redis_destroy() {
-    $client = $this->redis_watchdog_client();
+  public static function redis_watchdog_redis_destroy() {
+    $client = self::redis_watchdog_client();
     if ($client->clear()) {
       return TRUE;
     }
@@ -88,7 +87,7 @@ class RedisWatchdog {
    *
    * @return array|mixed
    */
-  public function _redis_watchdog_get_message_types() {
+  public function get_message_types() {
     $log = $this->redis_watchdog_client();
     return $log->getMessageTypes();
   }
@@ -98,7 +97,7 @@ class RedisWatchdog {
    *
    * @return array|mixed
    */
-  public function _redis_watchdog_get_message_types_count() {
+  public function get_message_types_count() {
     $log = $this->redis_watchdog_client();
     return $log->getMessageTypesCounts();
   }
