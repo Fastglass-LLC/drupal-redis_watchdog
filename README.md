@@ -4,8 +4,9 @@ for performance.
 
 Requirements
 ------------------------------------
-Redis Watchdog module requires PHP 5.5 or greater. In this module we use special
-class methods that were introduced in PHP 5.5.
+Redis Watchdog module requires PHP 7.0 or greater. Although Drupal 8 requires
+PHP 5.6 we use type casting in method calls that was only implemented in 
+PHP 7.0. Type casting allows strict control over a method in a class.
 
 To operate, the module requires that you have PHPRedis module installed on your
 server's PHP.
