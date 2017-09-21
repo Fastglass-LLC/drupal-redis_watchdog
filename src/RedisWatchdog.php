@@ -2,8 +2,8 @@
 
 namespace Drupal\redis_watchdog;
 
-use Drupal\redis_watchdog as Redis;
 use Drupal\Component\Utility as Util;
+use Drupal\redis_watchdog as Redis;
 
 class RedisWatchdog {
 

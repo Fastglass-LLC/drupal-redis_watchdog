@@ -1,7 +1,7 @@
 <?php
 
 namespace Drupal\redis_watchdog;
-use Drupal\redis;
+
 use Drupal\redis\ClientFactory as RedisClient;
 
 /**
