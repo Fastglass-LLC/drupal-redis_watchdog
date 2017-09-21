@@ -4,6 +4,10 @@
   "version": "7.x-4.7",
   "homepage": "https://www.drupal.org/project/redis_watchdog",
   "license": "GNU-2.0+",
+  "type": "drupal-module",
+  "require": {
+    "php": "^7.0"
+  },
   "keywords": [
     "Redis",
     "cache",
