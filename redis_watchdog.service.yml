@@ -1,0 +1,5 @@
+services:
+  logger.redis_watchdog:
+    class: Drupal\redis_watchdog\RedisWatchdogLogger
+    tags:
+      - { name: logger}
