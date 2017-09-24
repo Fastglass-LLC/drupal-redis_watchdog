@@ -1,0 +1,5 @@
+redis_watchdog.settings_form:
+  route_name: redis_watchdog.settings
+  parent: system.admin_config_development
+  title: 'Redis Watchdog Settings'
+  description: 'Configure Redis Watchdog settings.'
