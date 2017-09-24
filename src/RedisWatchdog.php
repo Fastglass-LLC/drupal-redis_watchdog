@@ -15,7 +15,7 @@ class RedisWatchdog {
 
   public static function redis_watchdog_client() {
     $config = \Drupal::config('redis_watchdog.settings');
-    $prefix = $config->get('watchdogprefix');
+    $prefix = $config->get('prefix');
     $limit = $config->get('recentlimit');
     $archive = $config->get('archivelimit');
     $client = new Redis\RedisLog($prefix, $limit, $archive);

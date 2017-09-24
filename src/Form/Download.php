@@ -12,7 +12,7 @@ class Download extends ControllerBase {
    */
   public function downloadForm(){
     $config = \Drupal::config('redis_watchdog.settings');
-    $prefix = $config->get('watchdogprefix');
+    $prefix = $config->get('prefix');
     if (empty($prefix)) {
       $prefix = '-';
     }
