@@ -3,6 +3,7 @@
 namespace Drupal\redis_watchdog\Form;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\redis_watchdog as rWatch;
 
 class EventDetails extends ControllerBase {
 
@@ -22,9 +23,9 @@ class EventDetails extends ControllerBase {
    */
   public function buildEventForm($eventid) {
     // @todo convert to new stuff for D8
-    $severity = watchdog_severity_levels();
-    $log = redis_watchdog_client();
-    $result = $log->getSingle($event_id);
+    $severity = rWatch\RedisWatchdog::watchdog_severity_levels();
+    $log = rWatch\RedisWatchdog::redis_watchdog_client();
+    $result = $log->getSingle($eventid);
 
     $rows = [
       [
