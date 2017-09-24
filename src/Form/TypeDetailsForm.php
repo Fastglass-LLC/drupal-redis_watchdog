@@ -3,6 +3,9 @@
 namespace Drupal\redis_watchdog\Form;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Component\Utility as Util;
+use Drupal\redis_watchdog;
+
 
 class TypeDetailsForm extends ControllerBase {
 
@@ -44,14 +47,14 @@ class TypeDetailsForm extends ControllerBase {
             // Cells
             ['class' => 'icon'],
             t($log->type),
-            format_date($log->timestamp, 'short'),
+            \Drupal::service('date.formatter')->format($log->timestamp, 'short'),
             theme('redis_watchdog_message', ['event' => $log, 'link' => TRUE]),
             theme('username', ['account' => $log]),
-            filter_xss($log->link),
+            Util\Xss::filter($log->link),
           ],
         // Attributes for tr
         'class' => [
-          drupal_html_class('dblog-' . $log->type),
+          Util\Html::cleanCssIdentifier('dblog-' . $log->type),
           $classes[$log->severity],
         ],
       ];
