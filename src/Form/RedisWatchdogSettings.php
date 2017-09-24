@@ -73,7 +73,7 @@ class RedisWatchdogSettings extends ConfigFormBase {
       '#collapsed' => TRUE,
       '#default_value' => $config->get('archivelimit'),
     ];
-    return $form;
+    return parent::buildForm($form, $form_state);
   }
 
   /**
@@ -83,7 +83,7 @@ class RedisWatchdogSettings extends ConfigFormBase {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    \Drupal::configFactory()->getEditable('redis_watchdog.serttings')
+    \Drupal::configFactory()->getEditable('redis_watchdog.settings')
       ->set('prefix', $form_state->getValue('redis_watchdogprefix'))
       ->set('recentlimit', $form_state->getValue('redis_watchdogrecentlimit'))
       ->set('pagelimit', $form_state->getValue('redis_watchdogtypepagelimit'))
