@@ -3,62 +3,6 @@
 namespace Drupal\redis_watchdog;
 
 /**
- * Implements hook_menu().
- */
-function redis_watchdog_menu() {
-  $items = [];
-  $items['admin/reports/redislog'] = [
-    'title' => 'Recent Redis Log Messages',
-    'description' => 'View events that have recently been logged.',
-    'page callback' => 'redis_watchdog_overview',
-    'access arguments' => ['access site reports'],
-    'weight' => -1,
-    'file' => 'redis_watchdog.admin.inc',
-  ];
-  $items['admin/reports/redislog/event/%'] = [
-    'title' => 'Details',
-    'page callback' => 'redis_watchdog_event',
-    'page arguments' => [4],
-    'access arguments' => ['access site reports'],
-    'file' => 'redis_watchdog.admin.inc',
-  ];
-  $items['admin/reports/redislog/type/%/%'] = [
-    'title' => 'Log Type Report',
-    'page callback' => 'redis_watchdog_type',
-    'access arguments' => ['access site reports'],
-    'file' => 'redis_watchdog.admin.inc',
-  ];
-  $items['admin/reports/redislog/export'] = [
-    'title' => 'Export Redis Log Messages',
-    'description' => 'Export logs to a CSV file.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => ['redis_watchdog_export'],
-    'access arguments' => ['access site reports'],
-    'weight' => -1,
-    'file' => 'redis_watchdog.admin.inc',
-    'type' => MENU_LOCAL_ACTION,
-  ];
-  $items['admin/reports/redislog/export/download'] = [
-    'title' => 'File download router.',
-    'description' => 'Export logs to a CSV file.',
-    'page callback' => 'redis_watchdog_export_download',
-    'access arguments' => ['access site reports'],
-    'weight' => -1,
-    'file' => 'redis_watchdog.admin.inc',
-    'type' => MENU_CALLBACK,
-  ];
-  return $items;
-}
-
-/**
- * Implements hook_watchdog().
- */
-function redis_watchdog_watchdog(array $entry) {
-  $q = redis_watchdog_client();
-  $q->log($entry);
-}
-
-/**
  * Private function to return the types of messages stored.
  *
  * @return array|mixed
@@ -90,54 +34,6 @@ function redis_watchdog_theme() {
   ];
 }
 
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-
-function redis_watchdog_form_redis_settings_form_alter(&$form, &$form_state) {
-  $form['watchdog'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Drupal Watchdog Logs'),
-    '#description' => t('Controls for the Watchdog module'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  ];
-  $form['watchdog']['redis_watchdogprefix'] = [
-    '#type' => 'textfield',
-    '#title' => t('Key prefix'),
-    '#description' => t('You may specify a prefix if you are using a single Redis server for multiple sites. This will add a prefix to the beginning of the keys.'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#default_value' => variable_get('redis_watchdogprefix', ''),
-  ];
-  $form['watchdog']['redis_watchdogrecentlimit'] = [
-    '#type' => 'textfield',
-    '#size' => 10,
-    '#title' => t('Recent log limit'),
-    '#description' => t('This is a limit on the display of recent logs in the default log view. This can be any number, but the larger the number the larger the dataset that is pulled into the default log page.'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#default_value' => variable_get('redis_watchdogrecentlimit', 200),
-  ];
-  $form['watchdog']['redis_watchdogtypepagelimit'] = [
-    '#type' => 'textfield',
-    '#size' => 10,
-    '#title' => t('Type log page size'),
-    '#description' => t('Page size for view logs of a specific type.'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#default_value' => variable_get('redis_watchdogrecentlimit', 100),
-  ];
-  $form['watchdog']['redis_watchdogarchivelimit'] = [
-    '#type' => 'textfield',
-    '#size' => 10,
-    '#title' => t('Archive log limit'),
-    '#description' => t('This is the limit on the amount of logs that will be saved for any log type.'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-    '#default_value' => variable_get('redis_watchdogarchivelimit', 5000),
-  ];
-}
 
 /**
  * Return the Redis client for log activity.
