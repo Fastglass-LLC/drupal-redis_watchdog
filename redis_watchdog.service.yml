@@ -1,5 +1,6 @@
 services:
   logger.redis_watchdog:
     class: Drupal\redis_watchdog\RedisWatchdogLogger
+    arguments: [@cache.backend.redis, @logger.log_message_parser']
     tags:
       - { name: logger}

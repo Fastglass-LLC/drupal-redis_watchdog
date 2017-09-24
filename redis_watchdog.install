@@ -10,9 +10,7 @@
  * Implements hook_uninstall().
  */
 
-function redis_watchdog_uninstall(){
-  variable_del('redis_watchdogprefix');
-  variable_del('redis_watchdogrecentlimit');
-  variable_del('redis_watchdogtypepagelimit');
-  variable_del('redis_watchdogarchivelimit');
+function redis_watchdog_uninstall() {
+  \Drupal::configFactory()->getEditable('redis_watchdog.settings')
+    ->delete();
 }

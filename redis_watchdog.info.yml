@@ -1,8 +1,9 @@
 name: 'Redis Watchdog'
 type: module
-description: 'Redis logging backend and user interface.'
+description: 'Redis storage for watchdog logs.'
 core: 8.x
 package: 'Performance'
+configure: redis_watchdog.settings
 dependencies:
   - redis
 php: 7.0

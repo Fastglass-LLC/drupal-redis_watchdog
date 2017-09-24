@@ -1,3 +1,4 @@
-watchdogprefix: ''
+prefix: ''
 recentlimit: 200
 archivelimit: 5000
+pagelimit: 50
