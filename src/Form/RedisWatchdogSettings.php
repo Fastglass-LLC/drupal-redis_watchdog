@@ -23,7 +23,6 @@ class RedisWatchdogSettings extends ConfigFormBase {
     return 'redis_watchdog_settings';
   }
 
-
   /**
    * {@inheritdoc}
    */

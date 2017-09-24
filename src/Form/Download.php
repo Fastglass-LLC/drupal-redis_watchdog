@@ -3,7 +3,7 @@
 namespace Drupal\redis_watchdog\Form;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\redis_watchdog;
+use Drupal\redis_watchdog as rWatch;
 
 class Download extends ControllerBase {
 
@@ -19,8 +19,8 @@ class Download extends ControllerBase {
     else {
       $prefix = '-' . $prefix . '-';
     }
-    Drupal\redis_watchdog\redis_watchdog_download_send_headers('drupal-redis-watchdog' . $prefix . 'export.csv');
-    echo redis_watchdog_csv_export();
+    rWatch\RedisWatchdog::redis_watchdog_download_send_headers('drupal-redis-watchdog' . $prefix . 'export.csv');
+    echo rWatch\RedisWatchdog::redis_watchdog_csv_export();
     die();
   }
 
