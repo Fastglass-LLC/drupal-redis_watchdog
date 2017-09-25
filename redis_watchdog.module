@@ -3,26 +3,6 @@
 namespace Drupal\redis_watchdog;
 
 /**
- * Private function to return the types of messages stored.
- *
- * @return array|mixed
- */
-function _redis_watchdog_get_message_types() {
-  $log = redis_watchdog_client();
-  return $log->getMessageTypes();
-}
-
-/**
- * Private function to return the count of message stored.
- *
- * @return array|mixed
- */
-function _redis_watchdog_get_message_types_count() {
-  $log = redis_watchdog_client();
-  return $log->getMessageTypesCounts();
-}
-
-/**
  * Implements hook_theme().
  */
 function redis_watchdog_theme() {
@@ -32,65 +12,6 @@ function redis_watchdog_theme() {
       'file' => 'redis_watchdog.admin.inc',
     ],
   ];
-}
-
-
-/**
- * Return the Redis client for log activity.
- *
- * @return object
- */
-
-function redis_watchdog_client() {
-  $prefix = variable_get('redis_watchdogprefix', '');
-  $limit = variable_get('redis_watchdogrecentlimit', 200);
-  $archive = variable_get('redis_watchdogarchivelimit', 5000);
-  $client = new Redislog($prefix, $limit, $archive);
-  return $client;
-}
-
-/**
- * Pulls all logs and returns them as a CSV file from the output buffer.
- *
- * @return string
- */
-
-function redis_watchdog_csv_export() {
-  $client = redis_watchdog_client();
-  $logs_to_export = $client->getAllMessages();
-  ob_start();
-  $df = fopen('php://output', 'w');
-  foreach ($logs_to_export as $row) {
-    // Convert the object to an array.
-    $data = unserialize($row);
-    $data = (array) $data;
-    fputcsv($df, $data);
-  }
-  fclose($df);
-  return ob_get_clean();
-}
-
-/**
- * Sets the page headers to force the browser to download a file.
- *
- * @param string $filename
- */
-function redis_watchdog_download_send_headers($filename) {
-  $filename = filter_xss($filename);
-  // Disable caching.
-  $now = gmdate('D, d M Y H:i:s');
-  header('Expires: Tue, 03 Jul 2001 06:00:00 GMT');
-  header('Cache-Control: max-age=0, no-cache, must-revalidate, proxy-revalidate');
-  header('Last-Modified: ' . $now . ' GMT');
-
-  // Force download.
-  header('Content-Type: application/force-download');
-  header('Content-Type: application/octet-stream');
-  header('Content-Type: application/download');
-
-  // Disposition and encoding on response body.
-  header('Content-Disposition: attachment;filename=' . $filename);
-  header('Content-Transfer-Encoding: binary');
 }
 
 /**
