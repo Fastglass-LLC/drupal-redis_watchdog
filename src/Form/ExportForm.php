@@ -1,6 +1,7 @@
 <?php
 
 namespace Drupal\redis_watchdog\Form;
+
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -12,8 +13,6 @@ use Drupal\Core\Form\FormStateInterface;
  *
  * @see \Drupal\Core\Form\FormBase
  */
-
-
 class ExportForm extends FormBase {
 
   /**
@@ -35,13 +34,15 @@ class ExportForm extends FormBase {
       '#collapsible' => FALSE,
       '#collapsed' => FALSE,
     ];
-    $form['redis_watchdog_export']['clear'] = [
-      '#type' => 'submit',
-      '#value' => t('Download log messages'),
-      '#submit' => ['redis_watchdog_export_submit'],
-    ];
+    // @todo This might not be needed
+    // $form['redis_watchdog_export']['clear'] = [
+    //   '#type' => 'submit',
+    //   '#value' => t('Download log messages'),
+    //   '#submit' => ['redis_watchdog_export_submit'],
+    // ];
 
-    return $form;
+    // return $form;
+    return parent::buildForm($form);
   }
 
   /**
@@ -52,7 +53,8 @@ class ExportForm extends FormBase {
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // TODO: Implement submitForm() method.
+    // @todo does this work
+    $form_state['redirect'] = 'admin/reports/redislog/export/download';
   }
 
 }

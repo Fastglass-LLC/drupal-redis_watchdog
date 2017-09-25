@@ -3,6 +3,8 @@
 namespace Drupal\redis_watchdog\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\redis_watchdog as rWatch;
+use Drupal\Component\Utility as Util;
 
 class RedisWatchdogOverview extends FormBase{
 
@@ -27,7 +29,9 @@ class RedisWatchdogOverview extends FormBase{
       ['data' => t('User'), 'field' => 'u.name'],
       ['data' => t('Operations')],
     ];
-    $log = redis_watchdog_client();
+    // @todo remove when working
+    // $log = redis_watchdog_client();
+    $log = rWatch\redis_watchdog_client();
     $result = $log->getRecentLogs();
     foreach ($result as $log) {
       $rows[] = [
@@ -36,14 +40,14 @@ class RedisWatchdogOverview extends FormBase{
             // Cells
             ['class' => 'icon'],
             t($log->type),
-            format_date($log->timestamp, 'short'),
+            \Drupal::service('date.formater')->format($log->timestamp, 'short'),
             theme('redis_watchdog_message', ['event' => $log, 'link' => TRUE]),
             theme('username', ['account' => $log]),
-            filter_xss($log->link),
+            Util\Xss::filter($log->link),
           ],
         // Attributes for tr
         'class' => [
-          drupal_html_class('dblog-' . $log->type),
+          Util\Html::cleanCssIdentifier('dblog-' . $log->type),
           $classes[$log->severity],
         ],
       ];
@@ -94,7 +98,9 @@ class RedisWatchdogOverview extends FormBase{
 
   private function filterForm($form){
     // Message types.
-    $wd_types = _redis_watchdog_get_message_types();
+    // @todo remove this once working
+    // $wd_types = _redis_watchdog_get_message_types();
+    $wd_types = rWatch\RedisWatchdog::get_message_types();
 
     // Build a selection list of log types.
     $form['filters'] = [
@@ -160,7 +166,9 @@ class RedisWatchdogOverview extends FormBase{
    */
   private function redis_watchdog_clear_log_submit() {
     $_SESSION['redis_watchdog_overview_filter'] = [];
-    $log = redis_watchdog_client();
+    // @todo remove this once working
+    // $log = redis_watchdog_client();
+    $log = rWatch\RedisWatchdog::redis_watchdog_client();
     $log->clear();
 
     drupal_set_message(t('Database log cleared.'));

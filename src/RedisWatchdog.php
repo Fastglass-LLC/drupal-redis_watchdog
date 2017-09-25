@@ -87,8 +87,8 @@ class RedisWatchdog {
    *
    * @return array|mixed
    */
-  public function get_message_types() {
-    $log = $this->redis_watchdog_client();
+  public static function get_message_types() {
+    $log = self::redis_watchdog_client();
     return $log->getMessageTypes();
   }
 
@@ -97,8 +97,8 @@ class RedisWatchdog {
    *
    * @return array|mixed
    */
-  public function get_message_types_count() {
-    $log = $this->redis_watchdog_client();
+  public static function get_message_types_count() {
+    $log = self::redis_watchdog_client();
     return $log->getMessageTypesCounts();
   }
 }
