@@ -9,7 +9,7 @@ redis_watchdog.settings:
 redis_watchdog.logs:
   path: 'admin/reports/redislog'
   defaults:
-    _form: '\Drupal\redis_watchdog\Form\RedisWatchdogOverview'
+    _controller: '\Drupal\redis_watchdog\Controller\RedisWatchdogOverview::overview'
     _title: 'Recent Redis Log Messages'
   requirements:
     _permission: 'access site reports'

@@ -1,16 +1,15 @@
 <?php
 
-namespace Drupal\redis_watchdog\Form;
+namespace Drupal\redis_watchdog\Controller;
 
 use Drupal\Component\Utility as Util;
-use Drupal\Core\Form\FormBase;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Controller\ControllerBase;
 use Drupal\redis_watchdog as rWatch;
 use Drupal\redis_watchdog\Form as rForm;
 
-class RedisWatchdogOverview extends FormBase {
+class RedisWatchdogOverview extends ControllerBase {
 
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function overview() {
     $rows = [];
     $classes = [
       WATCHDOG_DEBUG => 'redis_watchdog-debug',
@@ -66,15 +65,18 @@ class RedisWatchdogOverview extends FormBase {
     // Log type selector menu.
     // $build['redis_watchdog_filter_form'] = drupal_get_form('redis_watchdog_filter_form');
     $build['redis_watchdog_filter_form'] = \Drupal::formBuilder()
-      ->getForm($this->filterForm($form));
+      ->getForm('\Drupal\redis_watchdog\Form\RedisWatchdogOverviewFilter');
+
+
     // Clear log form.
-    // $build['redis_watchdog_clear_log_form'] = drupal_get_form('redis_watchdog_clear_log_form');
     $build['redis_watchdog_filter_form'] = \Drupal::formBuilder()
-      ->getForm($this->redis_watchdog_clear_log_form($form));
+      ->getForm('\Drupal\redis_watchdog\Form\RedisWatchdogOverviewClearForm');
 
 
     // // Summary of log types stored and the number of items in the log.
     // $build['redis_watchdog_type_count_table'] = \Drupal::formBuilder()->getForm($this->redis_watchdog_log_type_count_table());
+    $table = new \Drupal\redis_watchdog\Controller\RedisWatchdogCountTable();
+    $build['redis_watchdog_type_count_table'] = $table->counttable();
 
     if (isset($_SESSION['redis_watchdog_overview_filter']['type']) && !empty($_SESSION['redis_watchdog_overview_filter']['type'])) {
       // @todo remove this if it works
@@ -98,62 +100,8 @@ class RedisWatchdogOverview extends FormBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function getFormId() {
-    return 'redis_watchdog_overview';
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    // TODO: Implement submitForm() method.
-  }
-
-  private function filterForm($form) {
-
-  }
-
-  /**
-   * Return form for redis_watchdog clear button.
-   *
-   * @ingroup forms
-   * @see redis_watchdog_clear_log_submit()
-   */
-  private function redis_watchdog_clear_log_form($form) {
-    $form['redis_watchdog_clear'] = [
-      '#type' => 'fieldset',
-      '#title' => t('Clear log messages'),
-      '#description' => t('This will permanently remove the log messages from the database.'),
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
-    ];
-    $form['redis_watchdog_clear']['clear'] = [
-      '#type' => 'submit',
-      '#value' => t('Clear log messages'),
-      '#submit' => $this->redis_watchdog_clear_log_submit(),
-    ];
-
-    return $form;
-  }
-
-  /**
-   * Submit callback: clear database with log messages.
-   */
-  private function redis_watchdog_clear_log_submit() {
-    $_SESSION['redis_watchdog_overview_filter'] = [];
-    // @todo remove this once working
-    // $log = redis_watchdog_client();
-    $log = rWatch\RedisWatchdog::redis_watchdog_client();
-    $log->clear();
-
-    drupal_set_message(t('Database log cleared.'));
-  }
-
-  /**
-   * This returns a themeable form that displays the total log count for different
-   * types of logs.
+   * This returns a themeable form that displays the total log count for
+   * different types of logs.
    *
    * @return array
    */

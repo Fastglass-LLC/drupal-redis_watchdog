@@ -42,7 +42,7 @@ class ExportForm extends FormBase {
     // ];
 
     // return $form;
-    return parent::buildForm($form);
+    return $form;
   }
 
   /**

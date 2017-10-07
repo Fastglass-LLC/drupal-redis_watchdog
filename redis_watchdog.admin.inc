@@ -147,37 +147,3 @@ function redis_watchdog_log_type_count_table() {
 
   return $build;
 }
-
-/**
- * Return form for redis_watchdog clear button.
- *
- * @ingroup forms
- * @see redis_watchdog_clear_log_submit()
- */
-function redis_watchdog_clear_log_form($form) {
-  $form['redis_watchdog_clear'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Clear log messages'),
-    '#description' => t('This will permanently remove the log messages from the database.'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  ];
-  $form['redis_watchdog_clear']['clear'] = [
-    '#type' => 'submit',
-    '#value' => t('Clear log messages'),
-    '#submit' => ['redis_watchdog_clear_log_submit'],
-  ];
-
-  return $form;
-}
-
-/**
- * Submit callback: clear database with log messages.
- */
-function redis_watchdog_clear_log_submit() {
-  $_SESSION['redis_watchdog_overview_filter'] = [];
-  $log = redis_watchdog_client();
-  $log->clear();
-
-  drupal_set_message(t('Database log cleared.'));
-}
