@@ -15,15 +15,16 @@ class EventDetails extends ControllerBase {
   }
 
   /**
-   * Form to shoe the details about an event by ID.
+   * Form to show the details about an event by ID.
    *
-   * @param int $id
+   * @param int $eventid
    *
    * @return array
    */
   public function buildEventForm($eventid) {
-    // @todo convert to new stuff for D8
-    $severity = rWatch\RedisWatchdog::watchdog_severity_levels();
+    // @todo remove once working
+    // $severity = watchdog_severity_levels();
+    $severity = \Drupal\Core\Logger\RfcLogLevel::getLevels();
     $log = rWatch\RedisWatchdog::redis_watchdog_client();
     $result = $log->getSingle($eventid);
 
