@@ -9,16 +9,8 @@ redis_watchdog.settings:
 redis_watchdog.logs:
   path: 'admin/reports/redislog'
   defaults:
-    _controller: '\Drupal\redis_watchdog\Form\RedisWatchdogOverview'
+    _form: '\Drupal\redis_watchdog\Form\RedisWatchdogOverview'
     _title: 'Recent Redis Log Messages'
-  requirements:
-    _permission: 'access site reports'
-
-redis_watchdog.export:
-  path: 'admin/reports/redislog/export'
-  defaults:
-    _form: '\Drupal\redis_watchdog\Form\ExportForm'
-    _title: 'Export Redis Log Messages'
   requirements:
     _permission: 'access site reports'
 
@@ -29,12 +21,32 @@ redis_watchdog.event:
     _title: 'Redis Log Event Details'
   requirements:
     _permission: 'access site reports'
+  options:
+    _admin_route: TRUE
+    parameters:
+      event_id:
+        type: int
 
 redis_watchdog.type:
   path: 'admin/reports/redislog/type/{type_id}/{page_number}'
   defaults:
     _form: '\Drupal\redis_watchdog\Form\TypeDetailsForm::buildTypeForm'
     _title: 'Log Type Report'
+  requirements:
+    _permission: 'access site reports'
+  options:
+    _admin_route: TRUE
+    parameters:
+      type_id:
+        type: int
+      page_number:
+        type: int
+
+redis_watchdog.export:
+  path: 'admin/reports/redislog/export'
+  defaults:
+    _form: '\Drupal\redis_watchdog\Form\ExportForm'
+    _title: 'Export Redis Log Messages'
   requirements:
     _permission: 'access site reports'
 
