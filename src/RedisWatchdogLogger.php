@@ -3,11 +3,26 @@
 namespace Drupal\redis_watchdog;
 
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Logger\LogMessageParserInterface;
 use Drupal\redis\ClientFactory as RedisClient;
 use Psr\Log\AbstractLogger;
+// To be used in the near future.
+// use Drupal\Core\Logger\RfcLogLevel;
 
 
 class RedisWatchdogLogger extends AbstractLogger {
+
+  /**
+   * Prefix to use on keys.
+   */
+  const REDISPREFIX = 'drupal:';
+
+  /**
+   * Redis connection.
+   *
+   * @var object
+   */
+  protected $redis;
 
   /**
    * Redis client object.
@@ -58,7 +73,109 @@ class RedisWatchdogLogger extends AbstractLogger {
    */
   protected $parser;
 
-  public function __construct(RedisClient $redis, $prefix = '', $recentlength = 200, $archivelimit = 5000) {
+  /**
+   * Prefix to the hash tables.
+   *
+   * @var string
+   */
+  protected $prefix;
+
+  /**
+   * Limit for pagination of results.
+   *
+   * @var string
+   */
+  protected $pagelimit;
+
+  /**
+   * Set the hash key.
+   */
+  public function setKey() {
+    $this->key = (!empty($this->prefix)) ? self::REDISPREFIX . ':' . $this->prefix . ':' : self::REDISPREFIX . ':';
+  }
+
+  /**
+   * Get the hash key.
+   *
+   * @return string
+   */
+  public function getKey() {
+    return $this->key;
+  }
+
+  /**
+   * Set the prefix of the hash keys.
+   *
+   * @param string $prefix
+   */
+  public function setPrefix(string $prefix) {
+    $this->prefix = $prefix;
+  }
+
+  /**
+   * Get the prefix of the hash key.
+   *
+   * @return string
+   */
+  public function getPrefix() {
+    return $this->prefix;
+  }
+
+  /**
+   * Set the archive limit.
+   *
+   * @param int $limit
+   */
+  public function setArchiveLimit(int $limit) {
+    $this->archivelimit = $limit;
+  }
+
+  /**
+   * Get the archive limit.
+   *
+   * @return int
+   */
+  public function getArchiveLimit() {
+    return $this->archivelimit;
+  }
+
+  /**
+   * Set the recent log limit.
+   *
+   * @param int $length
+   */
+  public function setRecentLength(int $length) {
+    $this->recent = $length;
+  }
+
+  /**
+   * Get the recent log limit.
+   *
+   * @return int
+   */
+  public function getRecentLength() {
+    return $this->recent;
+  }
+
+  /**
+   * Set the page limit.
+   *
+   * @param int $limit
+   */
+  public function setPageLimit(int $limit) {
+    $this->pagelimit = $limit;
+  }
+
+  /**
+   * Return the page limit.
+   *
+   * @return string
+   */
+  public function getPageLimit() {
+    return $this->pagelimit;
+  }
+
+  public function __construct(RedisClient $redis, LogMessageParserInterface $parser) {
     // @todo remove this when converstion to Drupal 8 is finished.
     // $this->client = Redis_Client::getManager()->getClient();
     // $this->client = RedisClient::getClient();
@@ -68,11 +185,21 @@ class RedisWatchdogLogger extends AbstractLogger {
     //     $this->key = 'drupal:watchdog';
     // }
 
+    // Set class variables from the Drupal configuration.
+    $config = \Drupal::config('redis_watchdog.settings');
+    $this->setRecentLength($config->get('prefix'));
+    $this->setArchiveLimit($config->get('archivelimit'));
+    // Set the prefix to the key.
+    $this->setPrefix($config->get('prefix'));
+    // Now the prefix is set, set the key.
+    $this->setKey();
+    $this->setPageLimit($config->get('pagelimit'));
+
+    // Set the client and parser.
     $this->client = $redis;
-    $this->key = (!empty($prefix)) ? 'drupal:watchdog:' . $prefix . ':' : 'drupal:watchdog:';
-    $this->recent = $recentlength;
-    $this->archivelimit = $archivelimit;
+    $this->parser = $parser;
   }
+
 
   /**
    * {@inheritDoc}
@@ -123,8 +250,6 @@ class RedisWatchdogLogger extends AbstractLogger {
     lTrim($this->key . ':logs:' . $tid, $this->archivelimit);
 
     $this->client->hSet($this->key, $wid, serialize($message));
-
-
   }
 
 
@@ -136,7 +261,6 @@ class RedisWatchdogLogger extends AbstractLogger {
    * @see https://github.com/phpredis/phpredis#hget
    */
   protected function getLogCounter() {
-
     return $this->client->hGet($this->key . ':counters', 'logs');
   }
 
