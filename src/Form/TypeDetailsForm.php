@@ -2,9 +2,9 @@
 
 namespace Drupal\redis_watchdog\Form;
 
-use Drupal\Core\Controller\ControllerBase;
 use Drupal\Component\Utility as Util;
-use Drupal\redis_watchdog;
+use Drupal\Core\Controller\ControllerBase;
+use Drupal\redis_watchdog as rWatch;
 
 
 class TypeDetailsForm extends ControllerBase {
@@ -15,7 +15,7 @@ class TypeDetailsForm extends ControllerBase {
    *
    * @return mixed
    */
-  public function buildTypeForm(int $tid, int $page = 0) {
+  public static function buildTypeForm(int $tid, int $page = 0) {
     $rows = [];
     $pagesize = 50;
     $classes = [
@@ -37,7 +37,9 @@ class TypeDetailsForm extends ControllerBase {
       ['data' => t('User'), 'field' => 'u.name'],
       ['data' => t('Operations')],
     ];
-    $log = redis_watchdog_client();
+    // @todo remove when working
+    // $log = redis_watchdog_client();
+    $log = rWatch\RedisWatchdog::redis_watchdog_client();
     // @todo pagination needed
     $result = $log->getMultipleByType($pagesize, $tid);
     foreach ($result as $log) {
@@ -47,9 +49,18 @@ class TypeDetailsForm extends ControllerBase {
             // Cells
             ['class' => 'icon'],
             t($log->type),
-            \Drupal::service('date.formatter')->format($log->timestamp, 'short'),
-            theme('redis_watchdog_message', ['event' => $log, 'link' => TRUE]),
-            theme('username', ['account' => $log]),
+            \Drupal::service('date.formatter')
+              ->format($log->timestamp, 'short'),
+            // theme('redis_watchdog_message', ['event' => $log, 'link' => TRUE]),
+            [
+              '#theme' => 'redis_watchdog_message',
+              ['event' => $log, 'link' => TRUE],
+            ],
+            // theme('username', ['account' => $log]),
+            [
+              '#theme' => 'username',
+              ['account' => $log],
+            ],
             Util\Xss::filter($log->link),
           ],
         // Attributes for tr
