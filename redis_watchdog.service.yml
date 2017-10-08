@@ -1,8 +1,10 @@
 services:
   logger.redis_watchdog:
-    class: Drupal\redis_watchdog\RedisWatchdogLogger
-    arguments: [@cache.backend.redis, @logger.log_message_parser']
+    class: Drupal\redis_watchdog\Logger
+    arguments:
+      - '@cache.backend.redis'
+      - '@logger.log_message_parser'
+      - '@config.factory'
     tags:
       - { name: logger}
       - { name: backend_overridable }
-parameters:
