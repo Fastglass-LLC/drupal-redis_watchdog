@@ -6,6 +6,7 @@ use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LogMessageParserInterface;
 use Drupal\redis\ClientFactory as RedisClient;
+use Drupal\redis\RedisPrefixTrait;
 use Psr\Log\AbstractLogger;
 
 // To be used in the near future.
@@ -13,6 +14,8 @@ use Psr\Log\AbstractLogger;
 
 
 class Logger extends AbstractLogger {
+
+  use RedisPrefixTrait;
 
   const CONFIG_NAME = 'redis_watchdog.settings';
 
@@ -195,9 +198,10 @@ class Logger extends AbstractLogger {
     $this->setRecentLength($config->get('prefix'));
     $this->setPageLimit($config->get('pagelimit'));
     $this->setArchiveLimit($config->get('archivelimit'));
-    // Set the prefix to the key.
-    $this->setPrefix($config->get('prefix'));
-    // Now the prefix is set, set the key.
+    // Pull in the default prefix from the Redis module and apend our watchdog
+    // prefix to that.
+    $this->setPrefix($this->getDefaultPrefix() . $config->get('prefix'));
+    // Now the key string is constructed from the previous line we set the key.
     $this->setKey();
 
     // Set the client and parser.
