@@ -4,8 +4,7 @@ namespace Drupal\redis_watchdog\Controller;
 
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\redis_watchdog\RedisWatchdog as rWatch;
+use Drupal\redis_watchdog\RedisWatchdog;
 
 
 /**
@@ -24,7 +23,8 @@ class RedisWatchdogCountTable extends ControllerBase {
   public function counttable() {
     // Get the counts.
     // $wd_types_count = _redis_watchdog_get_message_types_count();
-    $wd_types_count = rWatch::get_message_types_count();
+    $redis = new RedisWatchdog();
+    $wd_types_count = $redis->get_message_types_count();
     $header = [
       t('Log Type'),
       t('Count'),

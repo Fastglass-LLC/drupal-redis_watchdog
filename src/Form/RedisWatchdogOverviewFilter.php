@@ -11,7 +11,7 @@ namespace Drupal\redis_watchdog\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\redis_watchdog\RedisWatchdog as rWatch;
+use Drupal\redis_watchdog\RedisWatchdog;
 
 class RedisWatchdogOverviewFilter extends FormBase {
 
@@ -31,7 +31,8 @@ class RedisWatchdogOverviewFilter extends FormBase {
     // Message types.
     // @todo remove this once working
     // $wd_types = _redis_watchdog_get_message_types();
-    $wd_types = rWatch::get_message_types();
+    $redis = new RedisWatchdog();
+    $wd_types = $redis->get_message_types();
 
     // Build a selection list of log types.
     $form['filters'] = [

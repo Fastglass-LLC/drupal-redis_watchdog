@@ -34,8 +34,9 @@ class RedisWatchdogOverview extends ControllerBase {
     // @todo remove when working
     // $log = redis_watchdog_client();
     // $log = rWatch\RedisWatchdog::redis_watchdog_client();
-    $log = RedisWatchdog::getClient();
-    $result = $log->getRecentLogs();
+    $redis = new RedisWatchdog();
+
+    $result = $redis->getRecentLogs();
     foreach ($result as $log) {
       $rows[] = [
         'data' =>
