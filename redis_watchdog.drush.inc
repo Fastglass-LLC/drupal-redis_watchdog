@@ -5,6 +5,8 @@
  * Provide drush integration for Redis Watchdog.
  */
 
+use Drupal\redis_watchdog\RedisWatchdog;
+
 /**
  * Implementation of hook_drush_command().
  */
@@ -44,7 +46,8 @@ function redis_watchdog_drush_help($section) {
  * Callback from the redis-watchdog-export command.
  */
 function drush_redis_watchdog_export($filepath) {
-  $data = redis_watchdog_csv_export();
+  $redis = new RedisWatchdog();
+  $data = $redis->exportCSV();
   $df = fopen($filepath, 'w');
   fwrite($df, $data);
   fclose($df);
@@ -54,5 +57,5 @@ function drush_redis_watchdog_export($filepath) {
  * Callback from the redis-watchdog-clear command.
  */
 function drush_redis_watchdog_clear() {
-  redis_watchdog_redis_destroy();
+  RedisWatchdog::redis_watchdog_redis_destroy();
 }
