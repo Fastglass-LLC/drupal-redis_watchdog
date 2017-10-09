@@ -69,7 +69,7 @@ class RedisWatchdog {
    * @return string
    */
 
-  public function redis_watchdog_csv_export() {
+  public function exportCSV() {
     $logs_to_export = $this->client->getAllMessages();
     ob_start();
     $df = fopen('php://output', 'w');

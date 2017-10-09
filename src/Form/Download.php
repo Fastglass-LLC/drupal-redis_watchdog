@@ -22,7 +22,7 @@ class Download extends ControllerBase {
       $prefix = '-' . $prefix . '-';
     }
     $redis->downloadSendHeaders('drupal-redis-watchdog' . $prefix . 'export.csv');
-    echo $redis->redis_watchdog_csv_export();
+    echo $redis->exportCSV();
     die();
   }
 
