@@ -3,7 +3,7 @@
 namespace Drupal\redis_watchdog;
 
 use Drupal\Component\Utility as Util;
-use Drupal\redis_watchdog as Redis;
+use Drupal\redis\ClientFactory;
 
 /**
  * Class RedisWatchdog.
@@ -12,11 +12,12 @@ use Drupal\redis_watchdog as Redis;
  *
  * @package Drupal\redis_watchdog
  */
-
 class RedisWatchdog {
 
   /**
    * Return the Redis client for log activity.
+   *
+   * @deprecated To be removed before release.
    *
    * @return object
    */
@@ -26,7 +27,24 @@ class RedisWatchdog {
     $prefix = $config->get('prefix');
     $limit = $config->get('recentlimit');
     $archive = $config->get('archivelimit');
-    $client = new Redis\RedisLog($prefix, $limit, $archive);
+    // $client = new Redis\RedisLog($prefix, $limit, $archive);
+    $client = ClientFactory::getClient();
+    return $client;
+  }
+
+  /**
+   * Return the Redis client for log activity.
+   *
+   * @return object
+   */
+
+  public static function getClient() {
+    $config = \Drupal::config('redis_watchdog.settings');
+    $prefix = $config->get('prefix');
+    $limit = $config->get('recentlimit');
+    $archive = $config->get('archivelimit');
+    // $client = new Redis\RedisLog($prefix, $limit, $archive);
+    $client = ClientFactory::getClient();
     return $client;
   }
 
