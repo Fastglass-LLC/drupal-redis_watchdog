@@ -98,7 +98,7 @@ class Logger extends AbstractLogger {
    * Set the hash key.
    */
   public function setKey() {
-    $this->key = (!empty($this->prefix)) ? self::REDISPREFIX . ':' . $this->prefix . ':' : self::REDISPREFIX . ':';
+    $this->key = (!empty($this->prefix)) ? $this->prefix : self::REDISPREFIX . 'watchdog:' ;
   }
 
   /**
@@ -187,12 +187,13 @@ class Logger extends AbstractLogger {
     $config = $config_factory->get(static::CONFIG_NAME);
 
     // Set class variables from the Drupal configuration.
-    $this->setRecentLength($config->get('prefix'));
+    $this->setRecentLength($config->get('recentlimit'));
     $this->setPageLimit($config->get('pagelimit'));
     $this->setArchiveLimit($config->get('archivelimit'));
     // Pull in the default prefix from the Redis module and apend our watchdog
     // prefix to that.
-    $this->setPrefix($this->getDefaultPrefix() . $config->get('prefix'));
+    $prefix = $this->getDefaultPrefix() . ':' . $config->get('prefix');
+    $this->setPrefix($this->getDefaultPrefix() . ':' . $config->get('prefix'));
     // Now the key string is constructed from the previous line we set the key.
     $this->setKey();
 
