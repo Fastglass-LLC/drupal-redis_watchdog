@@ -7,9 +7,10 @@ redis_watchdog.settings_form:
 redis_watchdog.reports.overview:
   parent: 'system.admin_reports'
   route_name: 'redis_watchdog.logs'
-  title: "Redis Log Overview"
+  title: 'Redis Log Overview'
+  description: 'View events that have been recently logged and stored in Redis'
 
 redis_watchdog.reports.export:
   parent: 'redis_watchdog.reports.overview'
   route_name: 'redis_watchdog.export'
-  title: "Export Redis Logs"
+  title: 'Export Redis Logs'
