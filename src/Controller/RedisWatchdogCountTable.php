@@ -40,7 +40,7 @@ class RedisWatchdogCountTable extends ControllerBase {
       ];
     }
     // Table of log items.
-    $build['redis_watchdog_type_count_table'] = [
+    $build = [
       '#theme' => 'table',
       '#header' => $header,
       '#rows' => $rows,
