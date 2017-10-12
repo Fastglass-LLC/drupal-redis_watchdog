@@ -33,7 +33,7 @@ class RedisWatchdog {
     $config = \Drupal::config('redis_watchdog.settings');
     $this->prefix = $this->getDefaultPrefix();
     $this->logprefix = $config->get('prefix');
-    $this->key = 'drupal:' . $this->prefix;
+    $this->key = $this->getDefaultPrefix() . ':' . $config->get('prefix');
     $this->limit = $config->get('recentlimit');
     $this->archive = $config->get('archivelimit');
     $this->client = ClientFactory::getClient();
