@@ -72,19 +72,20 @@ class RedisWatchdogOverview extends ControllerBase {
 
 
     // Clear log form.
-    $build['redis_watchdog_filter_form'] = \Drupal::formBuilder()
+    $build['redis_watchdog_filter_form_clear'] = \Drupal::formBuilder()
       ->getForm('\Drupal\redis_watchdog\Form\RedisWatchdogOverviewClearForm');
 
 
     // // Summary of log types stored and the number of items in the log.
     // $build['redis_watchdog_type_count_table'] = \Drupal::formBuilder()->getForm($this->redis_watchdog_log_type_count_table());
     $table = new \Drupal\redis_watchdog\Controller\RedisWatchdogCountTable();
+
     $build['redis_watchdog_type_count_table'] = $table->counttable();
 
     if (isset($_SESSION['redis_watchdog_overview_filter']['type']) && !empty($_SESSION['redis_watchdog_overview_filter']['type'])) {
       // @todo remove this if it works
       // $typeid = check_plain(array_pop($_SESSION['redis_watchdog_overview_filter']['type']));
-      $typeid = (int) Util\SafeMarkup::checkPlain(array_pop($_SESSION['redis_watchdog_overview_filter']['type']));
+      $typeid = Util\SafeMarkup::checkPlain(array_pop($_SESSION['redis_watchdog_overview_filter']['type']));
       // $build['redis_watchdog_table'] = redis_watchdog_type($typeid);
       $build['redis_watchdog_table'] = rForm\TypeDetailsForm::buildTypeForm($typeid);
     }
