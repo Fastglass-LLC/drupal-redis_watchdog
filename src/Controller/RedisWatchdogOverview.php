@@ -44,7 +44,7 @@ class RedisWatchdogOverview extends ControllerBase {
             // Cells
             ['class' => 'icon'],
             t($log->type),
-            \Drupal::service('date.formater')->format($log->timestamp, 'short'),
+            \Drupal::service('date.formatter')->format($log->timestamp, 'short'),
             // theme('redis_watchdog_message', ['event' => $log, 'link' => TRUE]),
             [
               '#theme' => 'redis_watchdog_message',
