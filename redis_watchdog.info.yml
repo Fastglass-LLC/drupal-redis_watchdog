@@ -6,4 +6,4 @@ package: 'Performance'
 configure: redis_watchdog.settings
 dependencies:
   - redis
-php: 7.0
+php: 7.x
