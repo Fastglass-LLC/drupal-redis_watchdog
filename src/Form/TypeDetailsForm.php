@@ -5,9 +5,22 @@ namespace Drupal\redis_watchdog\Form;
 use Drupal\Component\Utility as Util;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\redis_watchdog as rWatch;
+use Psr\Log\LogLevel;
+use Drupal\Core\Logger\RfcLogLevel;
 
 
 class TypeDetailsForm extends ControllerBase {
+
+  const SEVERITY_CLASSES = [
+    RfcLogLevel::DEBUG => self::SEVERITY_PREFIX . LogLevel::DEBUG,
+    RfcLogLevel::INFO => self::SEVERITY_PREFIX . LogLevel::INFO,
+    RfcLogLevel::NOTICE => self::SEVERITY_PREFIX . LogLevel::NOTICE,
+    RfcLogLevel::WARNING => self::SEVERITY_PREFIX . LogLevel::WARNING,
+    RfcLogLevel::ERROR => self::SEVERITY_PREFIX . LogLevel::ERROR,
+    RfcLogLevel::CRITICAL => self::SEVERITY_PREFIX . LogLevel::CRITICAL,
+    RfcLogLevel::ALERT => self::SEVERITY_PREFIX . LogLevel::ALERT,
+    RfcLogLevel::EMERGENCY => self::SEVERITY_PREFIX . LogLevel::EMERGENCY,
+  ];
 
   /**
    * @param int $tid
@@ -15,7 +28,7 @@ class TypeDetailsForm extends ControllerBase {
    *
    * @return mixed
    */
-  public static function buildTypeForm(int $tid, int $page = 0) {
+  public static function buildTypeForm($tid, $page = 0) {
     $rows = [];
     $pagesize = 50;
     $classes = [
@@ -66,7 +79,7 @@ class TypeDetailsForm extends ControllerBase {
         // Attributes for tr
         'class' => [
           Util\Html::cleanCssIdentifier('dblog-' . $log->type),
-          $classes[$log->severity],
+          static::SEVERITY_CLASSES[$template->severity],
         ],
       ];
     }
