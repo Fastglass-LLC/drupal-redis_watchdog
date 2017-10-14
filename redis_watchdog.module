@@ -1,17 +1,3 @@
 <?php
 
 namespace Drupal\redis_watchdog;
-
-/**
- * Implements hook_theme().
- */
-function redis_watchdog_theme() {
-  return [
-    'redis_watchdog_message' => [
-      'variables' => ['event' => NULL, 'link' => FALSE],
-      'file' => 'redis_watchdog.admin.inc',
-    ],
-  ];
-}
-
-

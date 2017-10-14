@@ -7,6 +7,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\redis_watchdog\Form as rForm;
 use Drupal\redis_watchdog\RedisWatchdog;
+use Drupal\Core\Link;
 use Psr\Log\LogLevel;
 
 class RedisWatchdogOverview extends ControllerBase {
@@ -167,12 +168,27 @@ class RedisWatchdogOverview extends ControllerBase {
     $redis = new RedisWatchdog();
     $levels = RfcLogLevel::getLevels();
     $result = $redis->getRecentLogs();
+
+
+
     foreach ($result as $log) {
+
+
+      // Process the message into a link and substitute variables.
+      // Truncate message to 56 chars.
+      if ($log->variables === 'N;') {
+        $output = $log->message;
+      }
+      // Message to translate with injected variables.
+      else {
+        $output = t($log->message, unserialize($log->variables));
+      }
+      $message = Util\Unicode::truncate(Util\Xss::filter($output, []), 56, TRUE, TRUE);
+      $message = Link::createFromRoute($message, 'redis_watchdog.event', ['eventid' => $log->wid]);
       $username = [
         '#theme' => 'username',
         '#account' => $this->userStorage->load($log->uid),
       ];
-      $message = $log->message;
       $rows[] = [
         'data' =>
           [

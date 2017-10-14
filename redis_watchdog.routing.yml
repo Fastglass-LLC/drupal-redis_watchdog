@@ -24,7 +24,7 @@ redis_watchdog.event:
   options:
     _admin_route: TRUE
     parameters:
-      event_id:
+      eventid:
         type: int
 
 redis_watchdog.type:
