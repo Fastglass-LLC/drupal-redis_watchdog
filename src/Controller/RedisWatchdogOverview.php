@@ -4,13 +4,17 @@ namespace Drupal\redis_watchdog\Controller;
 
 use Drupal\Component\Utility as Util;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\redis_watchdog\Form as rForm;
 use Drupal\redis_watchdog\RedisWatchdog;
 use Psr\Log\LogLevel;
-use Drupal\Core\Logger\RfcLogLevel;
 
 class RedisWatchdogOverview extends ControllerBase {
 
+
+  protected $userStorage;
+
+  const SEVERITY_PREFIX = 'redis_watchdog__severity_';
 
   const SEVERITY_CLASSES = [
     RfcLogLevel::DEBUG => self::SEVERITY_PREFIX . LogLevel::DEBUG,
@@ -22,6 +26,10 @@ class RedisWatchdogOverview extends ControllerBase {
     RfcLogLevel::ALERT => self::SEVERITY_PREFIX . LogLevel::ALERT,
     RfcLogLevel::EMERGENCY => self::SEVERITY_PREFIX . LogLevel::EMERGENCY,
   ];
+
+  public function __construct() {
+    $this->userStorage = $this->entityManager()->getStorage('user');
+  }
 
   public function overview() {
 
@@ -111,7 +119,7 @@ class RedisWatchdogOverview extends ControllerBase {
     // Get the counts.
     $redis = new RedisWatchdog();
     // $wd_types_count = _redis_watchdog_get_message_types_count();
-    $wd_types_count =$redis->getMessageTypesCounts();
+    $wd_types_count = $redis->getMessageTypesCounts();
     $header = [
       t('Log Type'),
       t('Count'),
@@ -146,13 +154,13 @@ class RedisWatchdogOverview extends ControllerBase {
   public function overviewRedisRows() {
 
     $header = [
-      '', // Icon column.
       ['data' => t('Type'), 'field' => 'w.type'],
+      ['data' => t('Severity'), 'field' => 'w.severity'],
       ['data' => t('Date'), 'field' => 'w.wid', 'sort' => 'desc'],
       t('Message'),
       ['data' => t('User'), 'field' => 'u.name'],
-      ['data' => t('Operations')],
     ];
+
     // @todo remove when working
     // $log = redis_watchdog_client();
     // $log = rWatch\RedisWatchdog::redis_watchdog_client();
@@ -160,41 +168,33 @@ class RedisWatchdogOverview extends ControllerBase {
     $levels = RfcLogLevel::getLevels();
     $result = $redis->getRecentLogs();
     foreach ($result as $log) {
+      $username = [
+        '#theme' => 'username',
+        '#account' => $this->userStorage->load($log->uid),
+      ];
+      $message = $log->message;
       $rows[] = [
         'data' =>
           [
-            // Cells
-            ['class' => 'icon'],
             t($log->type),
+            [
+              'class' => static::SEVERITY_CLASSES[$log->severity],
+              'data' => $levels[$log->severity],
+            ],
             \Drupal::service('date.formatter')
               ->format($log->timestamp, 'short'),
-            // theme('redis_watchdog_message', ['event' => $log, 'link' => TRUE]),
-            [
-              '#theme' => 'redis_watchdog_message',
-              ['event' => $log, 'link' => TRUE],
-            ],
-            // theme('username', ['account' => $log]),
-            [
-              '#theme' => 'username',
-              ['account' => $log],
-            ],
-            Util\Xss::filter($log->link),
+            ['data' => $message],
+            ['data' => $username],
           ],
-        // Attributes for tr
-        'class' => [
-          Util\Html::cleanCssIdentifier('dblog-' . $log->type),
-        ],
-        'class' => static::SEVERITY_CLASSES[$template->severity],
+        'class' => static::SEVERITY_CLASSES[$log->severity],
       ];
-
-      return [
-        '#type' => 'table',
-        '#header' => $header,
-        '#rows' => $rows,
-        '#empty' => t('No log messages available.'),
-      ];
-
     }
-
+    $devstop = 0;
+    return [
+      '#type' => 'table',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => t('No log messages available.'),
+    ];
   }
 }
