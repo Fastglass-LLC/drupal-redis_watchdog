@@ -19,14 +19,22 @@ function redis_watchdog_overview() {
     WATCHDOG_ALERT => 'redis_watchdog-alert',
     WATCHDOG_EMERGENCY => 'redis_watchdog-emerg',
   ];
-
+  $severity = [
+    WATCHDOG_DEBUG => 'Debug',
+    WATCHDOG_INFO => 'Info',
+    WATCHDOG_NOTICE => 'Notice',
+    WATCHDOG_WARNING => 'Warning',
+    WATCHDOG_ERROR => 'Error',
+    WATCHDOG_CRITICAL => 'Critical',
+    WATCHDOG_ALERT => 'Alert',
+    WATCHDOG_EMERGENCY => 'Emergency',
+  ];
   $header = [
-    '', // Icon column.
-    ['data' => t('Type'), 'field' => 'w.type'],
-    ['data' => t('Date'), 'field' => 'w.wid', 'sort' => 'desc'],
+    ['data' => t('Type'), 'field' => ''],
+    ['data' => t('Date'), 'field' => 'timestamp', 'sort' => 'desc'],
+    ['data' => t('Severity'), 'field' => 'severity', 'sort' => 'desc'],
     t('Message'),
-    ['data' => t('User'), 'field' => 'u.name'],
-    ['data' => t('Operations')],
+    ['data' => t('User'), 'field' => 'username'],
   ];
   $log = redis_watchdog_client();
   $result = $log->getRecentLogs();
@@ -34,13 +42,11 @@ function redis_watchdog_overview() {
     $rows[] = [
       'data' =>
         [
-          // Cells
-          ['class' => 'icon'],
           t($log->type),
           format_date($log->timestamp, 'short'),
+          $severity[$log->severity],
           theme('redis_watchdog_message', ['event' => $log, 'link' => TRUE]),
           theme('username', ['account' => $log]),
-          filter_xss($log->link),
         ],
       // Attributes for tr
       'class' => [
@@ -72,6 +78,7 @@ function redis_watchdog_overview() {
     ];
     $build['redis_watchdog_pager'] = ['#theme' => 'pager'];
   }
+
 
   return $build;
 }
@@ -421,7 +428,7 @@ function redis_watchdog_export_submit($form, &$form_state) {
  */
 function redis_watchdog_export_download() {
   $prefix = variable_get('redis_watchdogprefix', '');
-  if (empty($prefix)){
+  if (empty($prefix)) {
     $prefix = '-';
   }
   else {
