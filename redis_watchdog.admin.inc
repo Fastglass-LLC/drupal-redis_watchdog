@@ -1,41 +1,6 @@
 <?php
 
 /**
- * Returns HTML for a log message.
- *
- * @param $variables
- *   An associative array containing:
- *   - event: An object with at least the message and variables properties.
- *   - link: (optional) Format message as link, event->wid is required.
- *
- * @return array
- *   Array of themeable items.
- *
- * @ingroup themeable
- */
-function theme_redis_watchdog_message($variables) {
-  $output = '';
-  $event = $variables['event'];
-  // Check for required properties.
-  if (isset($event->message) && isset($event->variables)) {
-    // Messages without variables or user specified text.
-    if ($event->variables === 'N;') {
-      $output = $event->message;
-    }
-    // Message to translate with injected variables.
-    else {
-      $output = t($event->message, unserialize($event->variables));
-    }
-    if ($variables['link'] && isset($event->wid)) {
-      // Truncate message to 56 chars.
-      $output = truncate_utf8(filter_xss($output, []), 56, TRUE, TRUE);
-      $output = l($output, 'admin/reports/redislog/event/' . $event->wid, ['html' => TRUE]);
-    }
-  }
-  return $output;
-}
-
-/**
  * Return form for redis_watchdog administration filters.
  *
  * @ingroup forms
