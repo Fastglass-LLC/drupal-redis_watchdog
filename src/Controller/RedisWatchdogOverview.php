@@ -4,19 +4,24 @@ namespace Drupal\redis_watchdog\Controller;
 
 use Drupal\Component\Utility as Util;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\redis_watchdog\Form as rForm;
 use Drupal\redis_watchdog\RedisWatchdog;
-use Drupal\Core\Link;
 use Psr\Log\LogLevel;
 
 class RedisWatchdogOverview extends ControllerBase {
 
-
   protected $userStorage;
+
+  protected $redis;
 
   const SEVERITY_PREFIX = 'redis_watchdog__severity_';
 
+  /**
+   * Used in processing of the log levels in displays and css classes.
+   */
   const SEVERITY_CLASSES = [
     RfcLogLevel::DEBUG => self::SEVERITY_PREFIX . LogLevel::DEBUG,
     RfcLogLevel::INFO => self::SEVERITY_PREFIX . LogLevel::INFO,
@@ -30,53 +35,15 @@ class RedisWatchdogOverview extends ControllerBase {
 
   public function __construct() {
     $this->userStorage = $this->entityManager()->getStorage('user');
+    $this->redis = new RedisWatchdog();
   }
 
+  /**
+   * Build the overview page.
+   *
+   * @return mixed
+   */
   public function overview() {
-
-
-    // $header = [
-    //   '', // Icon column.
-    //   ['data' => t('Type'), 'field' => 'w.type'],
-    //   ['data' => t('Date'), 'field' => 'w.wid', 'sort' => 'desc'],
-    //   t('Message'),
-    //   ['data' => t('User'), 'field' => 'u.name'],
-    //   ['data' => t('Operations')],
-    // ];
-    // // @todo remove when working
-    // // $log = redis_watchdog_client();
-    // // $log = rWatch\RedisWatchdog::redis_watchdog_client();
-    // $redis = new RedisWatchdog();
-    //
-    // $result = $redis->getRecentLogs();
-    // foreach ($result as $log) {
-    //   $rows[] = [
-    //     'data' =>
-    //       [
-    //         // Cells
-    //         ['class' => 'icon'],
-    //         t($log->type),
-    //         \Drupal::service('date.formatter')
-    //           ->format($log->timestamp, 'short'),
-    //         // theme('redis_watchdog_message', ['event' => $log, 'link' => TRUE]),
-    //         [
-    //           '#theme' => 'redis_watchdog_message',
-    //           ['event' => $log, 'link' => TRUE],
-    //         ],
-    //         // theme('username', ['account' => $log]),
-    //         [
-    //           '#theme' => 'username',
-    //           ['account' => $log],
-    //         ],
-    //         Util\Xss::filter($log->link),
-    //       ],
-    //     // Attributes for tr
-    //     'class' => [
-    //       Util\Html::cleanCssIdentifier('dblog-' . $log->type),
-    //     ],
-    //     'class' => static::SEVERITY_CLASSES[$template->severity],
-    //   ];
-    // }
 
     // Log type selector menu.
     // $build['redis_watchdog_filter_form'] = drupal_get_form('redis_watchdog_filter_form');
@@ -162,14 +129,9 @@ class RedisWatchdogOverview extends ControllerBase {
       ['data' => t('User'), 'field' => 'u.name'],
     ];
 
-    // @todo remove when working
-    // $log = redis_watchdog_client();
-    // $log = rWatch\RedisWatchdog::redis_watchdog_client();
-    $redis = new RedisWatchdog();
+
     $levels = RfcLogLevel::getLevels();
-    $result = $redis->getRecentLogs();
-
-
+    $result = $this->redis->getRecentLogs();
 
     foreach ($result as $log) {
 
@@ -212,5 +174,65 @@ class RedisWatchdogOverview extends ControllerBase {
       '#rows' => $rows,
       '#empty' => t('No log messages available.'),
     ];
+  }
+
+  /**
+   * Form to show the details about an event by ID.
+   *
+   * @param int $eventid
+   *
+   * @return array
+   */
+  public function buildEventForm($eventid) {
+
+    $result = $this->redis->getSingle($eventid);
+
+    if ($log = $result) {
+      $username = [
+        '#theme' => 'username',
+        '#account' => $this->userStorage->load($log->uid),
+      ];
+      $rows = [
+        [
+          ['data' => t('Type'), 'header' => TRUE],
+          t($log->type),
+        ],
+        [
+          ['data' => t('Date'), 'header' => TRUE],
+          \Drupal::service('date.formatter')->format($log->timestamp, 'long'),
+        ],
+        [
+          ['data' => t('User'), 'header' => TRUE],
+          ['data' => $username],
+        ],
+        [
+          ['data' => t('Location'), 'header' => TRUE],
+          Link::fromTextAndUrl($log->location, Url::fromUri($log->location)),
+        ],
+        [
+          ['data' => t('Referrer'), 'header' => TRUE],
+          Link::fromTextAndUrl($log->referer, Url::fromUri($log->referer)),
+        ],
+        [
+          ['data' => t('Message'), 'header' => TRUE],
+          t($log->message, unserialize($log->variables)),
+        ],
+        [
+          ['data' => t('Severity'), 'header' => TRUE],
+          static::SEVERITY_CLASSES[$log->severity],
+        ],
+        [
+          ['data' => t('Hostname'), 'header' => TRUE],
+          Util\SafeMarkup::checkPlain($log->hostname),
+        ],
+
+      ];
+    }
+    $build['redis_watchdog_table'] = [
+      '#theme' => 'table',
+      '#rows' => $rows,
+      '#attributes' => ['class' => ['redis_watchdog-event']],
+    ];
+    return $build;
   }
 }
