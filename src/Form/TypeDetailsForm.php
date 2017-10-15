@@ -92,7 +92,6 @@ class TypeDetailsForm extends ControllerBase {
       '#attributes' => ['id' => 'admin-redis_watchdog'],
       '#empty' => t('No log messages available.'),
     ];
-    $build['redis_watchdog_pager'] = ['#theme' => 'pager'];
 
     return $build;
   }

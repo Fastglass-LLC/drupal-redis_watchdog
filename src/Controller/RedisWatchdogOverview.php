@@ -70,9 +70,7 @@ class RedisWatchdogOverview extends ControllerBase {
     }
     else {
       $build['redis_watchdog_table'] = $this->overviewRedisRows();
-      $build['redis_watchdog_pager'] = ['#theme' => 'pager'];
     }
-
     return $build;
   }
 
@@ -119,7 +117,6 @@ class RedisWatchdogOverview extends ControllerBase {
    * @return array
    */
   public function overviewRedisRows() {
-
     $header = [
       ['data' => t('Type'), 'field' => 'w.type'],
       ['data' => t('Severity'), 'field' => 'w.severity'],
@@ -127,14 +124,9 @@ class RedisWatchdogOverview extends ControllerBase {
       t('Message'),
       ['data' => t('User'), 'field' => 'u.name'],
     ];
-
-
     $levels = RfcLogLevel::getLevels();
     $result = $this->redis->getRecentLogs();
-
     foreach ($result as $log) {
-
-
       // Process the message into a link and substitute variables.
       // Truncate message to 56 chars.
       if ($log->variables === 'N;') {
@@ -166,11 +158,10 @@ class RedisWatchdogOverview extends ControllerBase {
         'class' => static::SEVERITY_CLASSES[$log->severity],
       ];
     }
-    $devstop = 0;
     return [
       '#type' => 'table',
       '#header' => $header,
-      '#rows' => $rows,
+      '#rows' => $rows ?? [],
       '#empty' => t('No log messages available.'),
     ];
   }
