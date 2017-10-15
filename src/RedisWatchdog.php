@@ -288,7 +288,7 @@ class RedisWatchdog {
 
   /**
    * Returns the value of the typeid counter. This will indicate the number of
-   * types stored
+   * types stored.
    *
    * @return integer
    *
@@ -348,10 +348,24 @@ class RedisWatchdog {
    * Destroys all Redis information. This function is static to be accessible
    * externally without substantiating the class.
    *
+   * @todo this is currently broken
+   *
    * @return bool
    */
   public static function redis_watchdog_redis_destroy() {
-    if (self::clear()) {
+
+    $redis = new RedisWatchdog;
+
+    $typecount = self::getTypeIDCounterValue();
+    self::$client->multi();
+    for ($i = 1; $i <= $typecount; $i++) {
+      self::$client->delete(self::$key . ':logs:' . $i);
+    }
+    self::$client->delete(self::$key . ':type');
+    self::$client->delete(self::$key . ':counters');
+    self::$client->delete(self::key . ':recentlogs');
+    self::$client->delete(self::$key);
+    if (self::$client->exec()) {
       return TRUE;
     }
     else {
