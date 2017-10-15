@@ -1,52 +1,5 @@
 <?php
 
-/**
- * Return form for redis_watchdog administration filters.
- *
- * @ingroup forms
- * @see redis_watchdog_filter_form_submit()
- * @see redis_watchdog_filter_form_validate()
- * @see redis_watchdog_overview()
- */
-function redis_watchdog_filter_form($form) {
-  // Message types.
-  $wd_types = _redis_watchdog_get_message_types();
-
-  // Build a selection list of log types.
-  $form['filters'] = [
-    '#type' => 'fieldset',
-    '#title' => t('Filter log messages by type'),
-    '#collapsible' => empty($_SESSION['redis_watchdog_overview_filter']),
-    '#collapsed' => TRUE,
-  ];
-  $form['filters']['type'] = [
-    '#title' => t('Available types'),
-    '#type' => 'select',
-    '#multiple' => TRUE,
-    '#size' => 8,
-    '#options' => array_flip($wd_types),
-  ];
-  $form['filters']['actions'] = [
-    '#type' => 'actions',
-    '#attributes' => ['class' => ['container-inline']],
-  ];
-  $form['filters']['actions']['submit'] = [
-    '#type' => 'submit',
-    '#value' => t('Filter'),
-  ];
-
-  if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
-    $form['filters']['actions']['reset'] = [
-      '#type' => 'submit',
-      '#value' => t('Reset'),
-    ];
-  }
-
-  if (!empty($_SESSION['redis_watchdog_overview_filter']['type'])) {
-    $form['filters']['type']['#default_value'] = $_SESSION['redis_watchdog_overview_filter']['type'];
-  }
-  return $form;
-}
 
 /**
  * Validate result from redis_watchdog administration filter form.
@@ -76,39 +29,4 @@ function redis_watchdog_filter_form_submit($form, &$form_state) {
       break;
   }
   return 'admin/reports/redis_watchdog';
-}
-
-/**
- * This returns a themeable form that displays the total log count for different
- * types of logs.
- *
- * @return array
- */
-function redis_watchdog_log_type_count_table() {
-  // Get the counts.
-  $wd_types_count = _redis_watchdog_get_message_types_count();
-  $header = [
-    t('Log Type'),
-    t('Count'),
-  ];
-  $rows = [];
-  foreach ($wd_types_count as $key => $value) {
-    $rows[] = [
-      'data' => [
-        // Cells
-        $key,
-        $value,
-      ],
-    ];
-  }
-  // Table of log items.
-  $build['redis_watchdog_type_count_table'] = [
-    '#theme' => 'table',
-    '#header' => $header,
-    '#rows' => $rows,
-    '#attributes' => ['id' => 'admin-redis_watchdog_type_count'],
-    '#empty' => t('No log messages available.'),
-  ];
-
-  return $build;
 }
