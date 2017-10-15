@@ -6,7 +6,7 @@ namespace Drupal\redis_watchdog\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\redis_watchdog as rWatch;
+use Drupal\redis_watchdog\RedisWatchdog;
 
 class RedisWatchdogOverviewClearForm extends FormBase {
 
@@ -43,9 +43,8 @@ class RedisWatchdogOverviewClearForm extends FormBase {
     $_SESSION['redis_watchdog_overview_filter'] = [];
     // @todo remove this once working
     // $log = redis_watchdog_client();
-    $log = rWatch\RedisWatchdog::redis_watchdog_client();
-    $log->clear();
-
+    $redis = new RedisWatchdog();
+    $redis->clear();
     drupal_set_message(t('Database log cleared.'));
   }
 }
