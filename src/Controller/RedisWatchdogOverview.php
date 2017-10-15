@@ -57,7 +57,6 @@ class RedisWatchdogOverview extends ControllerBase {
 
 
     // // Summary of log types stored and the number of items in the log.
-    // $build['redis_watchdog_type_count_table'] = \Drupal::formBuilder()->getForm($this->redis_watchdog_log_type_count_table());
     $table = new \Drupal\redis_watchdog\Controller\RedisWatchdogCountTable();
 
     $build['redis_watchdog_type_count_table'] = $table->counttable();
@@ -232,6 +231,7 @@ class RedisWatchdogOverview extends ControllerBase {
       '#theme' => 'table',
       '#rows' => $rows,
       '#attributes' => ['class' => ['redis_watchdog-event']],
+      '#empty' => t('No log messages available.'),
     ];
     return $build;
   }
