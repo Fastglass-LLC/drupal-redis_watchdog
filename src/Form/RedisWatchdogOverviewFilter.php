@@ -18,14 +18,14 @@ class RedisWatchdogOverviewFilter extends FormBase {
   const SESSION_KEY = 'redis_watchdog_overview_filter';
 
   /**
-   * @inheritDoc
+   * {@inheritdoc}
    */
   public function getFormId() {
     return 'redis_watchdog_overview_filter';
   }
 
   /**
-   * @inheritDoc
+   * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Message types.
@@ -33,6 +33,7 @@ class RedisWatchdogOverviewFilter extends FormBase {
     // $wd_types = _redis_watchdog_get_message_types();
     $redis = new RedisWatchdog();
     $wd_types = $redis->get_message_types();
+    $session_filter = $_SESSION[static::SESSION_KEY] ?? [];
 
     // Build a selection list of log types.
     $form['filters'] = [
@@ -57,24 +58,42 @@ class RedisWatchdogOverviewFilter extends FormBase {
       '#value' => t('Filter'),
     ];
 
-    if (!empty($_SESSION['redis_watchdog_overview_filter'])) {
+    if (!empty($session_filter)) {
       $form['filters']['actions']['reset'] = [
         '#type' => 'submit',
-        '#value' => t('Reset'),
+        '#value' => $this->t('Reset'),
+        '#limit_validation_errors' => [],
+        '#submit' => ['::resetForm'],
       ];
     }
 
-    if (!empty($_SESSION['redis_watchdog_overview_filter']['type'])) {
-      $form['filters']['type']['#default_value'] = $_SESSION['redis_watchdog_overview_filter']['type'];
+    if (!empty($session_filter)) {
+      $form['filters']['type']['#default_value'] = $session_filter;
     }
     return $form;
   }
 
   /**
-   * @inheritDoc
+   * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // TODO: Implement submitForm() method.
+    $filters = $this->getFilters();
+    foreach ($filters as $name => $filter) {
+      if ($form_state->hasValue($name)) {
+        $_SESSION[static::SESSION_KEY][$name] = $form_state->getValue($name);
+      }
+    }
+  }
+
+  /**
+   * Custom reset function for the form.
+   *
+   * @param array $form
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   */
+
+  public function resetForm(array &$form, FormStateInterface $form_state) {
+
   }
 
 
