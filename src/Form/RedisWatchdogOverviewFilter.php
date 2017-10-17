@@ -17,6 +17,8 @@ class RedisWatchdogOverviewFilter extends FormBase {
 
   const SESSION_KEY = 'redis_watchdog_overview_filter';
 
+  protected $redis;
+
   /**
    * {@inheritdoc}
    */
@@ -25,14 +27,21 @@ class RedisWatchdogOverviewFilter extends FormBase {
   }
 
   /**
+   * @inheritDoc
+   */
+  public function __construct() {
+    $this->redis = new RedisWatchdog();
+  }
+
+
+  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     // Message types.
     // @todo remove this once working
-    // $wd_types = _redis_watchdog_get_message_types();
-    $redis = new RedisWatchdog();
-    $wd_types = $redis->get_message_types();
+
+    $wd_types = $this->redis->get_message_types();
     $session_filter = $_SESSION[static::SESSION_KEY] ?? [];
 
     // Build a selection list of log types.
@@ -77,7 +86,8 @@ class RedisWatchdogOverviewFilter extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $filters = $this->getFilters();
+
+    $filters = $this->redis->get_message_types();
     foreach ($filters as $name => $filter) {
       if ($form_state->hasValue($name)) {
         $_SESSION[static::SESSION_KEY][$name] = $form_state->getValue($name);
