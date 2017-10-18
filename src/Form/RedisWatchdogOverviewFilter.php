@@ -103,7 +103,7 @@ class RedisWatchdogOverviewFilter extends FormBase {
    */
 
   public function resetForm(array &$form, FormStateInterface $form_state) {
-
+    $_SESSION[static::SESSION_KEY] = [];
   }
 
 
