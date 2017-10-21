@@ -1,0 +1,13 @@
+# Menu tasks for Rules.
+
+redis_watchdog.overview:
+  title: 'Overview'
+  route_name: redis_watchdog.logs
+  base_route: redis_watchdog.logs
+  weight: 1
+
+redis_watchdog.export_logs:
+  title: 'Export'
+  route_name: redis_watchdog.export
+  base_route: redis_watchdog.logs
+  weight: 10

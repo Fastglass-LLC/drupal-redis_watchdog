@@ -13,6 +13,8 @@ redis_watchdog.logs:
     _title: 'Recent Redis Log Messages'
   requirements:
     _permission: 'access site reports'
+  options:
+    _admin_route: TRUE
 
 redis_watchdog.event:
   path: 'admin/reports/redislog/event/{eventid}'
@@ -45,7 +47,9 @@ redis_watchdog.export:
 redis_watchdog.export-download:
   path: 'admin/reports/redislog/export/download'
   defaults:
-    _form: '\Drupal\redis_watchdog\Form\Download::downloadForm'
+    _controller: '\Drupal\redis_watchdog\Form\Download::downloadForm'
     _title: 'File download router'
   requirements:
     _permission: 'access site reports'
+  options:
+    _admin_route: TRUE
