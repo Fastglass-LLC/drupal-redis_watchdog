@@ -28,18 +28,14 @@ class ExportForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['redis_watchdog_export'] = [
-      '#type' => 'fieldset',
-      '#title' => t('Download Logs'),
-      '#description' => t('Click the link below to export all of the logs in Redis to a CSV file.'),
-      '#collapsible' => FALSE,
-      '#collapsed' => FALSE,
+      '#markup' => '<p>' . t('Click the link below to export all of the logs in Redis to a CSV file.') . '</p>',
+      '#weight' => -1,
     ];
     // @todo This might not be needed
-    // $form['redis_watchdog_export']['clear'] = [
-    //   '#type' => 'submit',
-    //   '#value' => t('Download log messages'),
-    //   '#submit' => ['redis_watchdog_export_submit'],
-    // ];
+    $form['downloadbutton'] = [
+      '#type' => 'submit',
+      '#value' => t('Download log messages'),
+    ];
 
     // return $form;
     return $form;
@@ -54,7 +50,8 @@ class ExportForm extends FormBase {
 
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // @todo does this work
-    $form_state['redirect'] = 'admin/reports/redislog/export/download';
+    // $form_state['redirect'] = 'admin/reports/redislog/export/download';
+    $form_state->setRedirect('redis_watchdog.export-download');
   }
 
 }
