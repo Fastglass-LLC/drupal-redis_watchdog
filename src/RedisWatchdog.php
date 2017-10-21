@@ -70,7 +70,7 @@ class RedisWatchdog {
    */
 
   public function exportCSV() {
-    $logs_to_export = $this->client->getAllMessages();
+    $logs_to_export = $this->getAllMessages();
     ob_start();
     $df = fopen('php://output', 'w');
     foreach ($logs_to_export as $row) {
