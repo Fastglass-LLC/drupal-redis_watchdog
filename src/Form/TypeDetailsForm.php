@@ -78,7 +78,7 @@ class TypeDetailsForm extends ControllerBase {
           ],
         // Attributes for tr
         'class' => [
-          Util\Html::cleanCssIdentifier('dblog-' . $log->type),
+          Util\Html::cleanCssIdentifier('redislog-' . $log->type),
           static::SEVERITY_CLASSES[$template->severity],
         ],
       ];

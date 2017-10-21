@@ -86,11 +86,10 @@ class RedisWatchdogOverviewFilter extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
     $filters = $this->redis->get_message_types();
     foreach ($filters as $name => $filter) {
-      if ($form_state->hasValue($name)) {
-        $_SESSION[static::SESSION_KEY][$name] = $form_state->getValue($name);
+      if ($form_state->hasValue($filter)) {
+        $_SESSION[static::SESSION_KEY][$name] = $form_state->getValue($filter);
       }
     }
   }
