@@ -1,0 +1,5 @@
+services:
+  redis_watchdog.commands:
+    class: \Drupal\redis_watchdog\Commands\RedisWatchdogCommands
+    tags:
+      - { name: drush.command }
