@@ -76,7 +76,10 @@ class RedisWatchdog {
     foreach ($logs_to_export as $row) {
       // Convert the object to an array.
       $data = unserialize($row);
+      $messageString = theme('redis_watchdog_message', ['event' => $data]);
       $data = (array) $data;
+      unset ($data['message']);
+      $data['message'] = $messageString;
       fputcsv($df, $data);
     }
     fclose($df);
